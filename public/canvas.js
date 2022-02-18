@@ -8,7 +8,7 @@ let coord = { x: 0, y: 0 };
 //=====================================//
 
 canvas.addEventListener("mousedown", startSignature);
-canvas.addEventListener("mouseup", finishAndSave);
+document.addEventListener("mouseup", finishAndSave);
 // window.addEventListener("resize", resize);
 
 //=====================================//
@@ -21,6 +21,7 @@ canvas.addEventListener("mouseup", finishAndSave);
 function reposition(e) {
     coord.x = e.clientX - canvas.offsetLeft;
     coord.y = e.clientY - canvas.offsetTop;
+    console.log(coord.x, coord.y);
 }
 
 function startSignature(e) {
@@ -37,6 +38,14 @@ function draw(e) {
     reposition(e);
     ctx.lineTo(coord.x, coord.y);
     ctx.stroke();
+     if (
+         coord.x < 0 ||
+         coord.x > canvas.width ||
+         coord.y < 0 ||
+         coord.y > canvas.height
+     ) {
+         return canvas.removeEventListener("mousemove", draw);
+     }
 }
 
 function finishAndSave() {

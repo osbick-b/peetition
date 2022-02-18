@@ -1,6 +1,6 @@
 const spicedPg = require("spiced-pg");
 
-const db = spicedPg("postgres:postgres:postgres@localhost:5432/places"); // localhost:5432/dbname ---- port that postgres uses by default
+const db = spicedPg("postgres:postgres:postgres@localhost:5432/petition"); // localhost:5432/dbname ---- port that postgres uses by default
 ///// ====== 1
 // db.query() // fn that makes a request to this database named above 
 //     .then((results) => {

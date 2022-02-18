@@ -25,7 +25,13 @@ footer {
 }
 
 /* ======================================= */
+/* ===== General Elements & Behaviors ===== */
+.btn {
+    cursor: pointer;
+}
 
+
+/* >>>>>>>>>>>> MAIN TEMPLATE LAYOUT <<<<<<<<<<<< */
 /* ===== Header ===== */
 
 .main-header {
@@ -34,6 +40,16 @@ footer {
     align-items: center;
 }
 
+/* ===== Footer ===== */
+footer {
+    background-color: hotpink;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+}
+
+
+/* >>>>>>>>>>>> SIGN PAGE <<<<<<<<<<<< */
 /* ===== Form ===== */
 form {
     display: flex;
@@ -46,9 +62,9 @@ input {
     border: none;
     font-size: 1.6rem;
     padding: 2%;
-
 }
 
+.error {}
 
 /* ===== Canvas ===== */
 canvas {
@@ -56,10 +72,21 @@ canvas {
     border-radius: 5vw;
 }
 
-/* ===== Footer ===== */
-footer {
-    background-color: hotpink;
-    width: 100%;
-    position: fixed;
-    bottom: 0;
+.disable-select {
+    user-select: none; /* supported by Chrome and Opera */
+   -webkit-user-select: none; /* Safari */
+   -khtml-user-select: none; /* Konqueror HTML */
+   -moz-user-select: none; /* Firefox */
+   -ms-user-select: none; /* Internet Explorer/Edge */
 }
+
+/* >>>>>>>>>>>> THANKS PAGE <<<<<<<<<<<< */
+/* ===== Sth ===== */
+
+
+/* >>>>>>>>>>>> SIGNERS PAGE <<<<<<<<<<<< */
+/* ===== List of Users ===== */
+
+.list-of-signers {}
+
+.one-signer {}
