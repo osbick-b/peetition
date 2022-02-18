@@ -8,10 +8,13 @@ app.use(express.static('./public'));
 
 // ---- Cookies:
 app.use(
+    // documentation on cookieSession --- https://github.com/expressjs/cookie-session
     cookieSession({
-        secret: "i'm gay",
-        maxAge: 1000 * 60 * 60 * 24 * 14,
-        httpOnly:true,
+        // name: "session", // default
+        // keys: [],
+        secret: "i'm gay", //will be used if keys is not provided
+        maxAge: 1000 * 60 * 60 * 24 * 7,
+        httpOnly: true,
         sameSite: true,
         secure: true,
     })

@@ -51,5 +51,9 @@ function draw(e) {
 function finishAndSave() {
     canvas.removeEventListener("mousemove", draw);
     // add save part --- maybe better do it on submit, just get value and shove it to db
-    let dataURL = canvas.toDataURL();
+    let canvasData = canvas.toDataURL();
+    console.log(canvasData);
+    let val = document.getElementById("signature");
+    console.log("value hidden input", val.val);
 }
+
