@@ -31,7 +31,7 @@ function startSignature(e) {
 
 function draw(e) {
     ctx.beginPath();
-    ctx.lineWidth = 9;
+    ctx.lineWidth = 6;
     ctx.lineCap = "round";
     ctx.strokeStyle = "orange";
     ctx.moveTo(coord.x, coord.y);
@@ -52,8 +52,7 @@ function finishAndSave() {
     canvas.removeEventListener("mousemove", draw);
     // add save part --- maybe better do it on submit, just get value and shove it to db
     let canvasData = canvas.toDataURL();
-    console.log(canvasData);
-    let val = document.getElementById("signature");
-    console.log("value hidden input", val.val);
+    document.getElementById("signature").value = canvasData;
+    console.log("value", document.getElementById("signature").value);
 }
 

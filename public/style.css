@@ -6,7 +6,7 @@
 body {
     margin: 0;
     background-color: gold;
-    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
 
     position: relative;
     display: flex;
@@ -24,47 +24,54 @@ footer {
     padding: 0 5vw;
 }
 
-/* ======================================= */
 /* ===== General Elements & Behaviors ===== */
 .btn {
     cursor: pointer;
 }
 
-
-/* >>>>>>>>>>>> MAIN TEMPLATE LAYOUT <<<<<<<<<<<< */
-/* ===== Header ===== */
-
+/* ===== MAIN TEMPLATE LAYOUT ===== */
 .main-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    height: 15vh;
 }
 
-/* ===== Footer ===== */
 footer {
     background-color: hotpink;
     width: 100%;
-    position: fixed;
-    bottom: 0;
+    height: 8vh;
+    /* position: sticky;
+    bottom: 0; */
 }
 
+.content {
+    min-height: 77vh;
+}
 
-/* >>>>>>>>>>>> SIGN PAGE <<<<<<<<<<<< */
+/* >>>>>>>>>>>> FORM <<<<<<<<<<<< */
 /* ===== Form ===== */
 form {
     display: flex;
     flex-direction: column;
-    gap: 3vh;
 }
 
 input {
     background-color: gold;
     border: none;
-    font-size: 1.6rem;
+    border-bottom: 3px solid indigo;
+    font-size: 1 rem;
     padding: 2%;
 }
 
-.error {}
+label {
+    color: indigo;
+    font-size: 1.4rem;
+    padding-bottom: 3vh;
+}
+
+.error {
+}
 
 /* ===== Canvas ===== */
 canvas {
@@ -74,19 +81,31 @@ canvas {
 
 .disable-select {
     user-select: none; /* supported by Chrome and Opera */
-   -webkit-user-select: none; /* Safari */
-   -khtml-user-select: none; /* Konqueror HTML */
-   -moz-user-select: none; /* Firefox */
-   -ms-user-select: none; /* Internet Explorer/Edge */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+}
+
+/* >>>>>>>>>>>> USER PROFILE <<<<<<<<<<<< */
+.container-profile {
+    background-color: pink;
+    border: 5px solid hotpink;
+}
+
+.user-data {
+    font-size: 1.6rem;
+    color: hotpink;
 }
 
 /* >>>>>>>>>>>> THANKS PAGE <<<<<<<<<<<< */
 /* ===== Sth ===== */
 
-
 /* >>>>>>>>>>>> SIGNERS PAGE <<<<<<<<<<<< */
 /* ===== List of Users ===== */
 
-.list-of-signers {}
+.list-of-signers {
+}
 
-.one-signer {}
+.one-signer {
+}

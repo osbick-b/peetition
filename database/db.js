@@ -1,10 +1,54 @@
 const spicedPg = require("spiced-pg");
 
 const db = spicedPg("postgres:postgres:postgres@localhost:5432/petition"); // localhost:5432/dbname ---- port that postgres uses by default
-///// ====== 1
+
+//====================================================================//
+
+// --- Register --- //
+module.exports.registerUser = (first, last, email, password) => {
+    return db.query(
+        "INSERT INTO users (first, last, email, password) VALUES ($1, $2, $3, $4) RETURNING *",
+        [first, last, email, password]
+    )
+        .then((results) => {
+            console.log("results in db", results.rows);
+            
+        })
+        .catch((err) => {
+            console.log("error in db.query", err);
+        });
+};
+
+
+// --- Sign Petition --- //
+module.exports.signPetition = (first, last, signature) => {
+    return db
+        .query(
+            "INSERT INTO signatures (first,last,signature) VALUES ($1, $2, $3) RETURNING *",
+            [first, last, signature]
+        )
+        .then((results) => {
+            console.log("signature from db", results);
+        })
+        .catch((err) => {
+            console.log("error in db.query 5", err);
+        });
+};
+
+
+// --- Get User Data --- //
+module.exports.getUserData = () => {
+  
+};
+
+
+
+
+
+// /// ====== 1
 // db.query() // fn that makes a request to this database named above
 //     .then((results) => {
-//         console.log("results: ", results);
+//        console.log("results.rows: ", results.rows);
 //     })
 //     .catch((err) => {
 //         console.log("err", err);
@@ -39,12 +83,12 @@ const db = spicedPg("postgres:postgres:postgres@localhost:5432/petition"); // lo
 //
 // by default a INSERT query doesnt return anything, but you can add sth like for ex:: RETURNING city, country
 
- // dataObj here being the obj submitted by the form, with props first, last, signature
-insertData = function (dataObj) {
-    for (key in dataObj) {
-        // +++++
-    }
-};
+// // dataObj here being the obj submitted by the form, with props first, last, signature
+// insertData = function (dataObj) {
+//     for (key in dataObj) {
+//         // +++++
+//     }
+// };
 
-//======>>>>> FINAL: organize all fns into an obj
-module.exports = {};
+// //======>>>>> FINAL: organize all fns into an obj
+// module.exports = {};
