@@ -91,6 +91,8 @@ canvas {
 .container-profile {
     background-color: pink;
     border: 5px solid hotpink;
+    width: 50vw;
+    padding: 5vh;
 }
 
 .user-data {

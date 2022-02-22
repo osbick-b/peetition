@@ -1,11 +1,13 @@
 <main>
+    <h2>Binding Contract</h2>
+    <p> Hereby I, {{first}} {{last}}, swear to devote my soul and body to the cause of this petition. No money I shall earn or victory I shall conquer will be deoted to another cause other than the contents of this petition. </p>
+    <p> I so solemnly swear. </p>
     <form class="disable-select" action="" method="post">
-        <input type="text" name="first" placeholder="first name" />
-        <input type="text" name="last" placeholder="last name" />
         <input type="hidden" name="signature" id="signature"/>
+        <label for="signature">Signature</label>
 
         <canvas height="200px" width="500px"></canvas>
         <script src="canvas.js"></script>
-        <input class="btn" type="submit" value="Sign the petition">
+        <input class="btn" type="submit" value="Sign the petition" id="submit-sign">
     </form>
 </main>

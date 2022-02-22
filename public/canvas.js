@@ -4,11 +4,13 @@
 const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
 let coord = { x: 0, y: 0 };
+let hasSigned;
 
 //=====================================//
 
 canvas.addEventListener("mousedown", startSignature);
 document.addEventListener("mouseup", finishAndSave);
+
 // window.addEventListener("resize", resize);
 
 //=====================================//
@@ -51,6 +53,7 @@ function draw(e) {
 function finishAndSave() {
     canvas.removeEventListener("mousemove", draw);
     // add save part --- maybe better do it on submit, just get value and shove it to db
+    let hasSigned = true;
     let canvasData = canvas.toDataURL();
     document.getElementById("signature").value = canvasData;
     console.log("value", document.getElementById("signature").value);

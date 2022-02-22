@@ -5,6 +5,8 @@
 
     {{! Insert handlebars context for navigating list of db thingie }}
     <ul class="list-of-signers">
-        <li class="one-signre">{{name}} {{lastName}}</li>
+        {{#dataToRender}}
+        <li class="one-signer">{{first}} {{last}}</li>
+        {{/dataToRender}}
     </ul>
 </main>

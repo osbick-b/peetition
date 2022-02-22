@@ -1,10 +1,9 @@
-module.exports.layoutMain = (title) => {
+module.exports.layoutMain = (title, data) => {
     const hdlbConfig = {
+        dataToRender: data,
         title: `${title} - MyPetition`,
         layout: "main",
-        // signatureImg: "", /// add signature img reference
     };
-    // console.log(hdlbConfig);
     return hdlbConfig;
 };
 

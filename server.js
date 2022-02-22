@@ -34,72 +34,83 @@ app.use((req, res, next) => {
 
 // ================ Routes ================== //
 
-//********************* Test ********************//
-
-app.get("/test", (req, res) => {
-    res.render("test", layoutMain("Test Form"));
-    // hasUserSigned()
-    //     ? res.redirect("/thanks")
-    //     : res.render("test", layoutMain("Sign Petition"));
-});
-
-app.post("/test", (req, res) => {
-    const { first, last, email, password, passconfirm } = req.body;
-    if (password !== passconfirm) {
-        return res.render("test", layoutMain("PASS DOES NOT MATCH")); // +++ Add handlebar partials/css classes to highlight thr error
-    } else {
-        hash(password)
-            .then((hashedPass) => {
-                db.registerUser(first, last, email, hashedPass)
-                    .then()
-                    .catch((err) => {
-                        console.log("error in register user", err);
-                        return res.render("test", layoutMain("ERROR REGISTER"));
-                    });
-            })
-            .catch((err) => {
-                console.log("error in hashing", err);
-            });
-    }
-});
-
-// ================ Real Routes =============== //
-
 app.get("/", (req, res) => {
-    // +++ edit redirect route --- think site structure
     console.log(req.session);
-    return res.redirect("/test");
+    return res.redirect("/profile");
 });
 
 app.get("/thanks", (req, res) => {
-    // Retrieve session id and display signature
-    console.log(req.session);
-    hasUserSigned()
-        ? res.render("thanks", layoutMain("Thanks for signing!")) // +++ add renderedImage --- to handlebar partials maybe?
-        : res.redirect("/");
+    console.log("req.session - in /thanks", req.session);
+    res.render("thanks", layoutMain("Thanks for signing!"));
 });
 
 app.get("/signers", (req, res) => {
-    res.render("signers", layoutMain("List of Signers"));
+    db.getListSigners()
+        .then((signers) => {
+          res.render("signerslist", layoutMain("List of Signers", signers));
+        })
+        .catch((err) => {
+            console.log("error in getListSigners", err);
+        });
 });
 
+app.get("/profile", (req, res) => {
+    console.log("req.session - in /profile", req.session);
+    db.getUserProfile(6) // +++ edit to userId once you get it running
+        .then((results) => {
+            // console.log(">> results in getUserProfile.then", results);
+            res.render("userprofile", layoutMain("My Profile", results));
+        })
+        .catch((err) => {
+            console.log("error in getUserProfile", err);
+        });
+});
+
+//================== GET POST Routes ===================//
+
 //---- Register ----//
+
 app.get("/register", (req, res) => {
+    // // ---- attempting to hardcode a val here to see if it passes on --> it does not. WHYYYY???
+    // console.log("req.session -- /register", req.session);
+    // req.session.someProp = "HOPE IT WORKS";
+    // console.log("req.session -- /register AFTER", req.session);
     res.render("register", layoutMain("Register"));
 });
 
 app.post("/register", (req, res) => {
-    const { first, last, email, password } = req.body;
-    hash(password)
-        .then() // faa hashedPassword -- if everything ges to plan, redir to petiition page
-        .catch((err) => {
-            console.log("!!! Error in register", err);
-            // re-render page with an apropriate error message -- you should always give the user some response!
-        });
+    const { first, last, email, password, passconfirm } = req.body;
+    return password !== passconfirm
+        ? res.render("register", layoutMain("PASS DOES NOT MATCH")) // +++ error handlebar
+        : hash(password)
+              .then((hashedPass) => {
+                  db.registerUser(first, last, email, hashedPass)
+                      .then((results) => {
+                          const { id, first, last } = results;
+                          // ---- trying to define cookie session, for some reason it wont pass on
+                          console.log("results", results);
+                          req.session = results;
+                          console.log("req.session AFTER", req.session);
+                          res.redirect("/sign");
+                      })
+                      .catch((err) => {
+                          // ??? when do you need to use return and when not??
+                          console.log("error in register user", err);
+                          res.render(
+                              "register",
+                              layoutMain("ERROR IN REGISTER")
+                          ); // +++ error handlebar
+                      });
+              })
+              .catch((err) => {
+                  console.log("error in hashing", err);
+              });
 });
 
 //---- Login ----//
+
 app.get("/login", (req, res) => {
+    console.log("req.session /login", req.session);
     res.render("login", layoutMain("Login"));
 });
 
@@ -114,54 +125,31 @@ app.post("/login", (req, res) => {
         });
 });
 
-// ---- Sign ---- +++ turned to test -- EDIT LATER //
+// ---- Sign ---- //
+
 app.get("/sign", (req, res) => {
+    console.log("req.session /sign", req.session);
     res.render("sign", layoutMain("Sign now!"));
-    // hasUserSigned()
-    //     ? res.redirect("/thanks")
-    //     : res.render("test", layoutMain("Sign Petition"));
 });
 
 app.post("/sign", (req, res) => {
-    // Req.body --- the data posted, that has to be validated
-    const { first, last, signature } = req.body;
-    console.log(first, last, signature);
+    // // Protect against Clickjacking --- ??? where does it go? -- for sure b4 sending stuff to client, but on what route(s)?
+    // res.setHeader("Content-Security-Policy", "frame-ancestors 'none'");
+    // res.setHeader("X-Frame-Options", "DENY");
 
-    db.signPetition(first,last,signature)
-    .then()
-    .catch((err) => {
-      console.log("error in signPetition", err);
-    });
-
-    // if (first.length < 2 || last.length < 2) {
-    //     console.log("!!!!!!data not valid");
-    //     // +++ Add code here to highlight problematic fields
-    // } else {
-    //     console.log("POST request sent");
-    //     // +++ Assign id to session --- then apply to cookie and to the get img thing
-    //     req.session.sigId = 6969; //// +++ CONNECT IT TO DB
-    //     cOOKIEtHINGIE = true;
-    //     console.log(req.session);
-    //     return res.redirect("/thanks");
-    // }
-
-    // DB Query --- insert data to db AND return signature id
-    // db.insertData()
-    //     .then(({ rows }) => {
-    //         console.log("rows", rows);
-    //     })
-    //     .catch((err) => {
-    //         console.log("err", err);
-    //     });
-
-    // Cookie Definition --- res.cookie("session-id", {configObj})
-
-    // Protect against Clickjacking
-    res.setHeader("Content-Security-Policy", "frame-ancestors 'none'");
-    res.setHeader("X-Frame-Options", "DENY");
+    const { signature } = req.body;
+    db.signPetition(signature, req.session.id) // +++ gotta check for if user has really signed canvas. prob not here
+        .then((results) => {
+            req.session.hasSigned = true;
+            return res.redirect("/thanks"); // ??? is redirecting even if error
+        })
+        .catch((err) => {
+            console.log("error in signPetition", err);
+        });
 });
 
-//---- Else ----//
+//================== Other Routes ==================//
+
 /////// add a logout route to clear cookies
 app.get("/clear", (req, res) => {
     req.session = null;
@@ -176,27 +164,3 @@ app.get("*", (req, res) => {
 });
 
 app.listen(8080, () => console.log(">> listening... http://localhost:8080"));
-
-//
-//
-//
-//
-// ================ Side Functions ================== //
-
-//----------- Fn to check if signed
-let cOOKIEtHINGIE;
-//>>>> when cls are no longer needed (when it works), refactor into ternary op
-// >>> maybe try to keep this fn in another file??
-const hasUserSigned = () => {
-    cOOKIEtHINGIE = false;
-    // check if user has already signed petition --- gives access or not to page
-    // check for cookies
-    // if theres cookies, change hasSigned = true
-    if (cOOKIEtHINGIE === true) {
-        console.log("user HAS signed \\o/");
-        return true;
-    } else {
-        console.log("user has not signed yet");
-        return false;
-    }
-};
