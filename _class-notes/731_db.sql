@@ -20,5 +20,16 @@ CREATE TABLE signatures (
     signature   TEXT NOT NULL CHECK (signature != '')
 );
 
-
 -- third table
+DROP TABLE IF EXISTS albums;
+
+CREATE TABLE albums (
+    id        SERIAL PRIMARY KEY,
+    name      VARCHAR,
+    song_id INT REFERENCES songs (id)
+);
+
+INSERT INTO albums (name, song_id)
+VALUES ('The Bends', 4),
+             ('OK Computer', 3),
+       ('The College Dropout', 7);

@@ -13,15 +13,15 @@ app.engine("handlebars", engine());
 app.set("view engine", "handlebars");
 
 app.use(express.static("./public"));
-app.use(express.urlencoded({ extended: false })); ////---- setup properly
+app.use(express.urlencoded({ extended: false }));
 
 app.use(
     cookieSession({
         secret: "i'm gay",
         maxAge: 1000 * 60 * 60 * 24 * 14,
-        httpOnly: true,
+        httpOnly: true, // --- *** was the cause of the cookie problem -- after all, this aint no http request :P
         sameSite: true,
-        secure: true,
+        // secure: true, // --- *** issues with this one too
     })
 );
 
@@ -35,19 +35,24 @@ app.use((req, res, next) => {
 // ================ Routes ================== //
 
 app.get("/", (req, res) => {
-    console.log(req.session);
-    return res.redirect("/profile");
+    console.log(">> req.session /post", req.session);
+    return res.redirect("/register"); // --- editing with whatever route we're working on now. !!! check for final version
 });
 
-app.get("/thanks", (req, res) => {
-    console.log("req.session - in /thanks", req.session);
-    res.render("thanks", layoutMain("Thanks for signing!"));
+app.get("/thanks", (req, res) => {db.getCanvasSignature(req.session.id)
+    .then((signature) => {
+        // return res.render("testprofile", layoutMain("Test Profile", signature));
+        return res.render("thanks", layoutMain("Thanks for signing!", signature));
+    })
+    .catch((err) => {
+        console.log("error in getCanvasSignature", err);
+    });
 });
 
 app.get("/signers", (req, res) => {
     db.getListSigners()
         .then((signers) => {
-          res.render("signerslist", layoutMain("List of Signers", signers));
+            res.render("signerslist", layoutMain("List of Signers", signers));
         })
         .catch((err) => {
             console.log("error in getListSigners", err);
@@ -55,14 +60,26 @@ app.get("/signers", (req, res) => {
 });
 
 app.get("/profile", (req, res) => {
-    console.log("req.session - in /profile", req.session);
-    db.getUserProfile(6) // +++ edit to userId once you get it running
+    console.log(">> req.session /profile", req.session);
+    db.getUserProfile(req.session.id)
         .then((results) => {
-            // console.log(">> results in getUserProfile.then", results);
+            console.log(">> results in getUserProfile.then", results);
             res.render("userprofile", layoutMain("My Profile", results));
         })
         .catch((err) => {
             console.log("error in getUserProfile", err);
+        });
+});
+
+//*********************TEST ROUTE*****************//
+app.get("/test", (req, res) => {
+    console.log(">> req.session /test", req.session);
+    db.getCanvasSignature(req.session.id)
+        .then((signature) => {
+            return res.render("testprofile", layoutMain("Test Profile", signature));
+        })
+        .catch((err) => {
+            console.log("error in getCanvasSignature", err);
         });
 });
 
@@ -71,32 +88,29 @@ app.get("/profile", (req, res) => {
 //---- Register ----//
 
 app.get("/register", (req, res) => {
-    // // ---- attempting to hardcode a val here to see if it passes on --> it does not. WHYYYY???
-    // console.log("req.session -- /register", req.session);
-    // req.session.someProp = "HOPE IT WORKS";
-    // console.log("req.session -- /register AFTER", req.session);
     res.render("register", layoutMain("Register"));
 });
 
 app.post("/register", (req, res) => {
     const { first, last, email, password, passconfirm } = req.body;
-    return password !== passconfirm
-        ? res.render("register", layoutMain("PASS DOES NOT MATCH")) // +++ error handlebar
+    return password === "" || password !== passconfirm
+        ? res.render("register", layoutMain("INVALID PASS")) // +++ error handlebar
         : hash(password)
               .then((hashedPass) => {
                   db.registerUser(first, last, email, hashedPass)
                       .then((results) => {
-                          const { id, first, last } = results;
-                          // ---- trying to define cookie session, for some reason it wont pass on
-                          console.log("results", results);
+                          //   const { id, first, last } = results;
+                          // ---- COOKIE THING --- trying to set cookie session, for some reason it wont pass on
                           req.session = results;
-                          console.log("req.session AFTER", req.session);
-                          res.redirect("/sign");
+                          console.log(
+                              ">>> req.session AFTER >>> = results",
+                              req.session
+                          );
+                          return res.redirect("/sign");
                       })
                       .catch((err) => {
-                          // ??? when do you need to use return and when not??
                           console.log("error in register user", err);
-                          res.render(
+                          return res.render(
                               "register",
                               layoutMain("ERROR IN REGISTER")
                           ); // +++ error handlebar
@@ -107,10 +121,9 @@ app.post("/register", (req, res) => {
               });
 });
 
-//---- Login ----//
+//---- Login ----// +++ NOT DONE YET
 
 app.get("/login", (req, res) => {
-    console.log("req.session /login", req.session);
     res.render("login", layoutMain("Login"));
 });
 
@@ -128,20 +141,23 @@ app.post("/login", (req, res) => {
 // ---- Sign ---- //
 
 app.get("/sign", (req, res) => {
-    console.log("req.session /sign", req.session);
+    console.log("req.session.id /sign", req.session.id);
     res.render("sign", layoutMain("Sign now!"));
 });
 
 app.post("/sign", (req, res) => {
+    // console.log(">>> req.session /sign >>>", req.session);
     // // Protect against Clickjacking --- ??? where does it go? -- for sure b4 sending stuff to client, but on what route(s)?
     // res.setHeader("Content-Security-Policy", "frame-ancestors 'none'");
     // res.setHeader("X-Frame-Options", "DENY");
 
     const { signature } = req.body;
+    console.log("req.session.id /sign", req.session.id);
     db.signPetition(signature, req.session.id) // +++ gotta check for if user has really signed canvas. prob not here
         .then((results) => {
-            req.session.hasSigned = true;
-            return res.redirect("/thanks"); // ??? is redirecting even if error
+            // req.session.hasSigned = true;
+            // return res.redirect("/thanks"); // ??? is redirecting even if error
+            return res.redirect("/profile"); // *** just for testing of displ sign
         })
         .catch((err) => {
             console.log("error in signPetition", err);
@@ -152,7 +168,9 @@ app.post("/sign", (req, res) => {
 
 /////// add a logout route to clear cookies
 app.get("/clear", (req, res) => {
+    console.log("req.session /clear BEFORE", req.session);
     req.session = null;
+    console.log("req.session /clear AFTER", req.session);
     res.redirect("/");
 });
 

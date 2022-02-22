@@ -22,11 +22,11 @@ module.exports.registerUser = (first, last, email, password) => {
 };
 
 // ------------- Sign Petition ------------- //
-module.exports.signPetition = (signature, userId) => {
+module.exports.signPetition = (signature, user_id) => {
     return db
         .query(
-            "INSERT INTO signatures (signature, user_id) VALUES ($1, $2) RETURNING signature",
-            [signature, userId] // +++ add user id
+            "INSERT INTO signatures (signature, user_id) VALUES ($1, $2) RETURNING signature, user_id",
+            [signature, user_id]
         )
         .then((results) => {
             console.log("row signature from db", results.rows[0]);
@@ -40,13 +40,11 @@ module.exports.signPetition = (signature, userId) => {
 // -------------- Get User Data -------------- //
 module.exports.getUserProfile = (userId) => {
     return db
-        .query(
-            "SELECT first, last, email FROM users WHERE id = $1", [userId]
-        )
+        .query("SELECT first, last, email FROM users WHERE id = $1", [userId])
         .then((results) => {
-          console.log(">> results in DB getUserProfile",results.rows[0]);
-          return results.rows[0];
-        //   const { first, last, email } = user;
+            console.log(">> results in DB getUserProfile", results.rows[0]);
+            return results.rows[0];
+            //   const { first, last, email } = user;
             // +++ render in handlebars
         })
         .catch((err) => {
@@ -56,12 +54,33 @@ module.exports.getUserProfile = (userId) => {
 
 // ------------ Get List of Signers ------------- //
 module.exports.getListSigners = () => {
-  return db
-      .query("SELECT first,last FROM users") // +++ WHERE hasSigned is true ---- sera q precisa?
-      .then((results) => {
-        return results.rows;
-      })
-      .catch((err) => {
-          console.log("error in db.query 7", err);
-      });
-}
+    return db
+        .query("SELECT first,last FROM users") // +++ WHERE hasSigned is true ---- sera q precisa?
+        .then((results) => {
+            return results.rows;
+        })
+        .catch((err) => {
+            console.log("error in db.query 7", err);
+        });
+};
+
+// ------------ Retrieve signature canvas ------------- //
+module.exports.getCanvasSignature = (user_id) => {
+    return db.query("SELECT * FROM signatures WHERE user_id = $1", [user_id])
+        .then((results) => {
+            // console.log("signature retrieved from DB", results.rows[0]);
+            return results.rows[0];
+        })
+        .catch((err) => {
+            console.log("error in db.query 8", err);
+        });
+};
+
+// // ------------ fnName ------------- //
+// module.exports.fnName = (user_id) => {
+//   db.query()
+//       .then()
+//       .catch((err) => {
+//           console.log("error in db.query XXX", err);
+//       });
+// };
