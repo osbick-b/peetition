@@ -1,10 +1,16 @@
 <main>
     <form class="disable-select" action="" method="post">
-        <input type="text" name="first" placeholder="first name" />
-        <input type="text" name="last" placeholder="last name" />
-        <button class="btn submit"><input
-                type="submit"
-                value="Login"
-            /></button>
+
+        <label for="email">
+            <input type="email" required="" name="email" id="email" />
+            email
+        </label>
+
+        <label for="password">
+            <input type="password" required="" name="password" id="password" />
+            password
+        </label>
+
+        <button class="submit" type="submit">Login</button>
     </form>
 </main>

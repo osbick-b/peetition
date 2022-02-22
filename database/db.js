@@ -21,6 +21,19 @@ module.exports.registerUser = (first, last, email, password) => {
         });
 };
 
+// ------------ Login ------------- //
+
+module.exports.checkCredentials = (email, password) => {
+    db.query("SELECT id, password AS saved_password FROM users WHERE email = $1", [email])
+        .then((results) => {
+          console.log("IN checkCredentials -- res.row", results.row);
+        //   if (password)
+        })
+        .catch((err) => {
+            console.log("error in db.query 2", err);
+        });
+};
+
 // ------------- Sign Petition ------------- //
 module.exports.signPetition = (signature, user_id) => {
     return db
@@ -29,7 +42,7 @@ module.exports.signPetition = (signature, user_id) => {
             [signature, user_id]
         )
         .then((results) => {
-            console.log("row signature from db", results.rows[0]);
+            // console.log("row signature from db", results.rows[0]);
             // console.log("signature from db", results.rows);
         })
         .catch((err) => {
@@ -66,7 +79,8 @@ module.exports.getListSigners = () => {
 
 // ------------ Retrieve signature canvas ------------- //
 module.exports.getCanvasSignature = (user_id) => {
-    return db.query("SELECT * FROM signatures WHERE user_id = $1", [user_id])
+    return db
+        .query("SELECT * FROM signatures WHERE user_id = $1", [user_id])
         .then((results) => {
             // console.log("signature retrieved from DB", results.rows[0]);
             return results.rows[0];

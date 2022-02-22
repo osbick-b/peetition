@@ -1,24 +1,28 @@
-<!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>{{title}}</title>
-</head>
-<body>
-    <header class="main-header">
-        <h1>My Petition</h1>
-    </header>
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="style.css" />
+        <title>{{title}}</title>
+    </head>
+    <body>
+        <header class="main-header">
+            <a href="/"><h1>My Petition</h1></a>
+            <nav class="main">
+                <a href="/signers">List of Signers</a>
+                <a href="/login">Login</a>
+                <a href="/clear">Clear</a>
+            </nav>
+        </header>
 
-    <div class="content">
-    {{{body}}}
-    </div>
+        <div class="content">
+            {{{body}}}
+        </div>
 
-    <footer>
-        <p>© Copyright Lcn 2022</p>
-    </footer>
+        <footer>
+            <p>© Copyright Lcn 2022</p>
+        </footer>
 
-</body>
+    </body>
 </html>

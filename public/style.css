@@ -1,12 +1,13 @@
 /* ===== General ===== */
 * {
     box-sizing: border-box;
+    margin: 0;
 }
 
 body {
-    margin: 0;
     background-color: gold;
     font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+    letter-spacing: 0.4px;
 
     position: relative;
     display: flex;
@@ -16,6 +17,10 @@ body {
 
 a {
     text-decoration: none;
+}
+
+button {
+    cursor: pointer;
 }
 
 main,
@@ -31,10 +36,16 @@ footer {
 
 /* ===== MAIN TEMPLATE LAYOUT ===== */
 .main-header {
+    width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
     height: 15vh;
+}
+
+nav.main a {
+    text-transform: uppercase;
+    margin-left: 1vw;
 }
 
 footer {
@@ -52,24 +63,38 @@ footer {
 /* >>>>>>>>>>>> FORM <<<<<<<<<<<< */
 /* ===== Form ===== */
 form {
+    padding: 5vh 0;
     display: flex;
     flex-direction: column;
+    font-size: 1.4rem;
 }
 
 input {
+    display: block;
     background-color: gold;
     border: none;
     border-bottom: 3px solid indigo;
-    font-size: 1 rem;
-    padding: 2%;
+    margin-bottom: 3%;
+    padding: 4%;
 }
 
 label {
     color: indigo;
-    font-size: 1.4rem;
-    padding-bottom: 3vh;
+    margin-bottom: 18%;
 }
 
+button.submit {
+    background-color: indigo;
+    border: none;
+    border-radius: 2rem;
+    padding: 6%;
+    font-size: 1.2rem;
+    color: whitesmoke;
+}
+
+button.submit:hover{
+    background-color: hotpink;
+}
 .error {
 }
 

@@ -34,19 +34,32 @@ app.use((req, res, next) => {
 
 // ================ Routes ================== //
 
+// +++ define permissions according to user session/if signed
+
 app.get("/", (req, res) => {
     console.log(">> req.session /post", req.session);
     return res.redirect("/register"); // --- editing with whatever route we're working on now. !!! check for final version
 });
 
-app.get("/thanks", (req, res) => {db.getCanvasSignature(req.session.id)
-    .then((signature) => {
-        // return res.render("testprofile", layoutMain("Test Profile", signature));
-        return res.render("thanks", layoutMain("Thanks for signing!", signature));
-    })
-    .catch((err) => {
-        console.log("error in getCanvasSignature", err);
-    });
+app.get("/logout", (req, res) => {
+    console.log("req.session /clear BEFORE", req.session);
+    req.session = null;
+    console.log("req.session /clear AFTER", req.session);
+    return res.redirect("/");
+});
+
+app.get("/thanks", (req, res) => {
+    db.getCanvasSignature(req.session.id)
+        .then((signature) => {
+            // return res.render("testprofile", layoutMain("Test Profile", signature));
+            return res.render(
+                "thanks",
+                layoutMain("Thanks for signing!", signature)
+            );
+        })
+        .catch((err) => {
+            console.log("error in getCanvasSignature", err);
+        });
 });
 
 app.get("/signers", (req, res) => {
@@ -76,7 +89,10 @@ app.get("/test", (req, res) => {
     console.log(">> req.session /test", req.session);
     db.getCanvasSignature(req.session.id)
         .then((signature) => {
-            return res.render("testprofile", layoutMain("Test Profile", signature));
+            return res.render(
+                "testprofile",
+                layoutMain("Test Profile", signature)
+            );
         })
         .catch((err) => {
             console.log("error in getCanvasSignature", err);
@@ -97,27 +113,19 @@ app.post("/register", (req, res) => {
         ? res.render("register", layoutMain("INVALID PASS")) // +++ error handlebar
         : hash(password)
               .then((hashedPass) => {
-                  db.registerUser(first, last, email, hashedPass)
-                      .then((results) => {
-                          //   const { id, first, last } = results;
-                          // ---- COOKIE THING --- trying to set cookie session, for some reason it wont pass on
-                          req.session = results;
-                          console.log(
-                              ">>> req.session AFTER >>> = results",
-                              req.session
-                          );
-                          return res.redirect("/sign");
-                      })
-                      .catch((err) => {
-                          console.log("error in register user", err);
-                          return res.render(
-                              "register",
-                              layoutMain("ERROR IN REGISTER")
-                          ); // +++ error handlebar
-                      });
+                  return db.registerUser(first, last, email, hashedPass);
+              })
+              .then((results) => {
+                  req.session = results; // getting from db --> id, first, last
+                  console.log(">>> req.session INIT", req.session);
+                  return res.redirect("/sign");
               })
               .catch((err) => {
-                  console.log("error in hashing", err);
+                  console.log("error in register user", err);
+                  return res.render(
+                      "register",
+                      layoutMain("ERROR IN REGISTER")
+                  ); // +++ error handlebar
               });
 });
 
@@ -128,10 +136,16 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-    const fakeHash = "aosjdoaijieIOEFJI(8327h"; // for test purposes only xxx
+    const { email, password } = req.body;
+
+    return hash(password).then().catch();
+
+    db.checkCredentials(email, password);
     compare("mySecretPass", fakeHash)
         .then((isMatch) => {
             console.log("Does password match db? ", isMatch);
+            // retrieve id && assign session id
+            return res.redirect("/profile");
         })
         .catch((err) => {
             console.log("!!! Error in compare passwords", err);
@@ -146,13 +160,13 @@ app.get("/sign", (req, res) => {
 });
 
 app.post("/sign", (req, res) => {
-    // console.log(">>> req.session /sign >>>", req.session);
+    console.log("req.session.id /sign", req.session.id);
+    const { signature } = req.body;
+
     // // Protect against Clickjacking --- ??? where does it go? -- for sure b4 sending stuff to client, but on what route(s)?
     // res.setHeader("Content-Security-Policy", "frame-ancestors 'none'");
     // res.setHeader("X-Frame-Options", "DENY");
 
-    const { signature } = req.body;
-    console.log("req.session.id /sign", req.session.id);
     db.signPetition(signature, req.session.id) // +++ gotta check for if user has really signed canvas. prob not here
         .then((results) => {
             // req.session.hasSigned = true;
