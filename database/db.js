@@ -7,87 +7,45 @@ const db = spicedPg("postgres:postgres:postgres@localhost:5432/petition"); // lo
 
 // ------------ Register ------------- //
 module.exports.registerUser = (first, last, email, password) => {
-    return db
-        .query(
-            "INSERT INTO users (first, last, email, password) VALUES ($1, $2, $3, $4) RETURNING id, first,last",
-            [first, last, email, password]
-        )
-        .then((results) => {
-            console.log("row user id from db", results.rows[0]);
-            return results.rows[0];
-        })
-        .catch((err) => {
-            console.log("error in db.query", err);
-        });
+    return db.query(
+        "INSERT INTO users (first, last, email, password) VALUES ($1, $2, $3, $4) RETURNING id, first",
+        [first, last, email, password]
+    );
 };
 
 // ------------ Login ------------- //
 
-module.exports.checkCredentials = (email, password) => {
-    db.query("SELECT id, password AS saved_password FROM users WHERE email = $1", [email])
-        .then((results) => {
-          console.log("IN checkCredentials -- res.row", results.row);
-        //   if (password)
-        })
-        .catch((err) => {
-            console.log("error in db.query 2", err);
-        });
+module.exports.getCredentials = (email) => {
+    console.log(">> in DB checkCreds -->", email);
+    return db.query(
+        "SELECT id AS user_id, first, password AS saved_pass FROM users WHERE email = $1 ",
+        [email]
+    );
 };
 
 // ------------- Sign Petition ------------- //
 module.exports.signPetition = (signature, user_id) => {
-    return db
-        .query(
-            "INSERT INTO signatures (signature, user_id) VALUES ($1, $2) RETURNING signature, user_id",
-            [signature, user_id]
-        )
-        .then((results) => {
-            // console.log("row signature from db", results.rows[0]);
-            // console.log("signature from db", results.rows);
-        })
-        .catch((err) => {
-            console.log("error in db.query 5", err);
-        });
+    return db.query(
+        "INSERT INTO signatures (signature, user_id) VALUES ($1, $2) RETURNING signature, user_id",
+        [signature, user_id]
+    );
 };
 
 // -------------- Get User Data -------------- //
-module.exports.getUserProfile = (userId) => {
-    return db
-        .query("SELECT first, last, email FROM users WHERE id = $1", [userId])
-        .then((results) => {
-            console.log(">> results in DB getUserProfile", results.rows[0]);
-            return results.rows[0];
-            //   const { first, last, email } = user;
-            // +++ render in handlebars
-        })
-        .catch((err) => {
-            console.log("error in db.query 6", err);
-        });
+module.exports.getUserProfile = (user_id) => {
+    return db.query("SELECT first, last, email FROM users WHERE id = $1", [
+        user_id,
+    ]);
 };
 
 // ------------ Get List of Signers ------------- //
 module.exports.getListSigners = () => {
-    return db
-        .query("SELECT first,last FROM users") // +++ WHERE hasSigned is true ---- sera q precisa?
-        .then((results) => {
-            return results.rows;
-        })
-        .catch((err) => {
-            console.log("error in db.query 7", err);
-        });
+    return db.query("SELECT first,last FROM users"); // +++ WHERE hasSigned is true ---- sera q precisa?
 };
 
 // ------------ Retrieve signature canvas ------------- //
 module.exports.getCanvasSignature = (user_id) => {
-    return db
-        .query("SELECT * FROM signatures WHERE user_id = $1", [user_id])
-        .then((results) => {
-            // console.log("signature retrieved from DB", results.rows[0]);
-            return results.rows[0];
-        })
-        .catch((err) => {
-            console.log("error in db.query 8", err);
-        });
+    return db.query("SELECT * FROM signatures WHERE user_id = $1", [user_id]);
 };
 
 // // ------------ fnName ------------- //

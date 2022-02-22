@@ -38,7 +38,7 @@ app.use((req, res, next) => {
 
 app.get("/", (req, res) => {
     console.log(">> req.session /post", req.session);
-    return res.redirect("/register"); // --- editing with whatever route we're working on now. !!! check for final version
+    return res.redirect("/login"); // --- editing with whatever route we're working on now. !!! check for final version
 });
 
 app.get("/logout", (req, res) => {
@@ -50,11 +50,11 @@ app.get("/logout", (req, res) => {
 
 app.get("/thanks", (req, res) => {
     db.getCanvasSignature(req.session.id)
-        .then((signature) => {
+        .then((results) => {
             // return res.render("testprofile", layoutMain("Test Profile", signature));
             return res.render(
                 "thanks",
-                layoutMain("Thanks for signing!", signature)
+                layoutMain("Thanks for signing!", results.rows[0])
             );
         })
         .catch((err) => {
@@ -64,8 +64,11 @@ app.get("/thanks", (req, res) => {
 
 app.get("/signers", (req, res) => {
     db.getListSigners()
-        .then((signers) => {
-            res.render("signerslist", layoutMain("List of Signers", signers));
+        .then((results) => {
+            res.render(
+                "signerslist",
+                layoutMain("List of Signers", results.rows)
+            );
         })
         .catch((err) => {
             console.log("error in getListSigners", err);
@@ -74,10 +77,14 @@ app.get("/signers", (req, res) => {
 
 app.get("/profile", (req, res) => {
     console.log(">> req.session /profile", req.session);
-    db.getUserProfile(req.session.id)
+    return db
+        .getUserProfile(req.session.id)
         .then((results) => {
-            console.log(">> results in getUserProfile.then", results);
-            res.render("userprofile", layoutMain("My Profile", results));
+            console.log(">> results in getUserProfile.then", results.rows[0]);
+            res.render(
+                "userprofile",
+                layoutMain("My Profile", results.rows[0])
+            );
         })
         .catch((err) => {
             console.log("error in getUserProfile", err);
@@ -116,8 +123,8 @@ app.post("/register", (req, res) => {
                   return db.registerUser(first, last, email, hashedPass);
               })
               .then((results) => {
-                  req.session = results; // getting from db --> id, first, last
-                  console.log(">>> req.session INIT", req.session);
+                  req.session = results.rows[0]; // getting from db --> id, first, last
+                  console.log(">>> INIT req.session", req.session);
                   return res.redirect("/sign");
               })
               .catch((err) => {
@@ -137,18 +144,33 @@ app.get("/login", (req, res) => {
 
 app.post("/login", (req, res) => {
     const { email, password } = req.body;
-
-    return hash(password).then().catch();
-
-    db.checkCredentials(email, password);
-    compare("mySecretPass", fakeHash)
+    console.log("input /login", email, password);
+    // return db
+    //     .getCredentials(email)
+    //     .then((credentials) => {
+    //         const { user_id, saved_pass } = credentials.rows[0];
+    //         console.log(
+    //             ">> getting from DB -- user credentials ",
+    //             credentials.rows[0]
+    //         );
+    //         return compare(password, saved_pass);
+    //     })
+    return db
+        .getCredentials(email)
+        .then((results) => {
+            const { saved_pass } = results.rows[0];
+            return compare(password, saved_pass);
+        })
         .then((isMatch) => {
+            console.log("EMAIL from outer scope", email);
             console.log("Does password match db? ", isMatch);
-            // retrieve id && assign session id
+            req.session = isMatch.rows[0];
+            console.log(">> req.session /login AFTER", req.session);
             return res.redirect("/profile");
         })
         .catch((err) => {
             console.log("!!! Error in compare passwords", err);
+            return res.render("login", layoutMain("ERROR IN Login")); // +++ error handlebar
         });
 });
 
@@ -167,7 +189,8 @@ app.post("/sign", (req, res) => {
     // res.setHeader("Content-Security-Policy", "frame-ancestors 'none'");
     // res.setHeader("X-Frame-Options", "DENY");
 
-    db.signPetition(signature, req.session.id) // +++ gotta check for if user has really signed canvas. prob not here
+    return db
+        .signPetition(signature, req.session.id) // +++ gotta check for if user has really signed canvas. prob not here
         .then((results) => {
             // req.session.hasSigned = true;
             // return res.redirect("/thanks"); // ??? is redirecting even if error
