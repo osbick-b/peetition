@@ -1,6 +1,7 @@
 -- drop existing tables
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS signatures;
+DROP TABLE IF EXISTS user_profiles;
 
 
 -- new users table
@@ -21,4 +22,11 @@ CREATE TABLE signatures (
 );
 
 
--- third table
+-- user_profiles table
+CREATE TABLE user_profiles (
+    id          SERIAL primary key,
+    city        VARCHAR(255),
+    age         INT,
+    website         VARCHAR, 
+    user_id     INTEGER NOT NULL UNIQUE REFERENCES users(id)
+);

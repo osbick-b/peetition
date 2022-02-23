@@ -1,9 +1,8 @@
-{{!-- link for documentation on accessibility for forms --}}
-{{!-- http://web-accessibility.carnegiemuseums.org/code/forms/ --}}
+{{! link for documentation on accessibility for forms }}
+{{! http://web-accessibility.carnegiemuseums.org/code/forms/ }}
 
 <main>
     <form class="disable-select" action="" method="post">
-
         <label for="first">
             <input type="text" required="" name="first" id="first" />
             first name
@@ -32,14 +31,28 @@
                 id="passconfirm"
             />
             confirm password
-            {{! <span class="req">(required)</span> }}
-            {{! <span class="error-message">
+        </label>
+        {{! <span class="req">(required)</span> }}
+        {{! <span class="error-message">
         Please give us a little more information about your inquiry.
       </span> }}
+        <label for="city">
+            <input type="text" name="city" id="city" />
+            city
+        </label>
+
+        <label for="age">
+            <input type="text" name="age" id="age" />
+            age
+        </label>
+
+        <label for="website">
+            <input type="text" name="website" id="website" />
+            website
         </label>
 
         <button class="submit" type="submit">Submit</button>
     </form>
 
-    <a href="/login" class="discreet">Already registered? Login here</a>
+    <a href="/sign" class="discreet"> → Skip</a>
 </main>

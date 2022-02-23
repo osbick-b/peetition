@@ -5,7 +5,7 @@ const cookieSession = require("cookie-session");
 
 const { engine } = require("express-handlebars");
 const { compare, hash } = require("./bc");
-const { layoutMain } = require("./niftypack");
+const { layoutMain, hasUserSigned, editProfile } = require("./niftypack");
 
 // =============== Middleware =================== //
 
@@ -32,20 +32,18 @@ app.use((req, res, next) => {
     }
 });
 
-// ================ Routes ================== //
+// ================ GET ONLY Routes ================== //
 
 // +++ define permissions according to user session/if signed
 
+// app.get("", (req,res) => {
+// console.log(">> req.session /post", req.session);
+
+// });
+
 app.get("/", (req, res) => {
     console.log(">> req.session /post", req.session);
-    return res.redirect("/login"); // --- editing with whatever route we're working on now. !!! check for final version
-});
-
-app.get("/logout", (req, res) => {
-    console.log("req.session /clear BEFORE", req.session);
-    req.session = null;
-    console.log("req.session /clear AFTER", req.session);
-    return res.redirect("/");
+    return res.redirect("/signers"); // --- editing with whatever route we're working on now. !!! check for final version
 });
 
 app.get("/thanks", (req, res) => {
@@ -62,51 +60,77 @@ app.get("/thanks", (req, res) => {
         });
 });
 
-app.get("/signers", (req, res) => {
-    db.getListSigners()
+app.get("/profile", (req, res) => {
+    return db
+        .getProfile(req.session.user_id)
         .then((results) => {
             res.render(
-                "signerslist",
-                layoutMain("List of Signers", results.rows)
+                "user_profile",
+                layoutMain("My Profile", results.rows[0])
             );
+        })
+        .catch((err) => {
+            console.log("error in getProfile", err);
+        });
+});
+
+app.get("/signers", (req, res) => {
+    db.getListSigners()
+        .then(({ rows }) => {
+            res.render("signerslist", layoutMain("List of Signers", rows));
         })
         .catch((err) => {
             console.log("error in getListSigners", err);
         });
 });
 
-app.get("/profile", (req, res) => {
-    console.log(">> req.session /profile", req.session);
-    return db
-        .getUserProfile(req.session.user_id)
-        .then((results) => {
-            console.log(">> results in getUserProfile.then", results.rows[0]);
+app.get("/signers/:city", (req, res) => {
+    db.getSignersByCity(req.params.city)
+        .then(({ rows }) => {
+            console.log("from DB --- rows by city", rows);
             res.render(
-                "userprofile",
-                layoutMain("My Profile", results.rows[0])
+                "signersbycity",
+                layoutMain(`List of signers in ${rows}`, rows)
             );
         })
         .catch((err) => {
-            console.log("error in getUserProfile", err);
+            console.log("error in getSignersByCity", err);
         });
 });
 
-//*********************TEST ROUTE*****************//
-app.get("/test", (req, res) => {
-    console.log(">> req.session /test", req.session);
-    db.getCanvasSignature(req.session.user_id)
-        .then((signature) => {
-            return res.render(
-                "testprofile",
-                layoutMain("Test Profile", signature)
-            );
-        })
-        .catch((err) => {
-            console.log("error in getCanvasSignature", err);
-        });
+app.get("/logout", (req, res) => {
+    req.session = null;
+    return res.redirect("/");
 });
 
 //================== GET POST Routes ===================//
+
+//---- Login ----//
+
+app.get("/login", (req, res) => {
+    res.render("login", layoutMain("Login"));
+});
+
+app.post("/login", (req, res) => {
+    const { email, password } = req.body;
+    return db
+        .getCredentials(email)
+        .then((credentials) => {
+            const { user_id, saved_pass } = credentials.rows[0];
+            return compare(password, saved_pass);
+        })
+        .then((isMatch) => {
+            return isMatch && db.getUserCookieInfo(email);
+        })
+        .then(({ rows }) => {
+            req.session = rows[0];
+            res.redirect("/profile");
+        })
+        .catch((err) => {
+            console.log("!!! Error in compare passwords", err);
+            return res.render("login", layoutMain("ERROR IN Login")); // +++ error handlebar
+        });
+});
 
 //---- Register ----//
 
@@ -124,7 +148,6 @@ app.post("/register", (req, res) => {
               })
               .then((results) => {
                   req.session = results.rows[0]; // getting from db --> id, first, last
-                  console.log(">>> INIT req.session", req.session);
                   return res.redirect("/sign");
               })
               .catch((err) => {
@@ -136,49 +159,55 @@ app.post("/register", (req, res) => {
               });
 });
 
-//---- Login ----//
+// ------------------ Set Profile --------------------- //
 
-app.get("/login", (req, res) => {
-    res.render("login", layoutMain("Login"));
+app.get("/setprofile", (req, res) => {
+    res.render("set_profile", layoutMain("Set Profile"));
 });
 
-app.post("/login", (req, res) => {
-    const { email, password } = req.body;
-    console.log("input /login", email, password);
+app.post("/setprofile", (req, res) => {
+    const { city, age, website } = req.body;
+    // +++ VALIDATE URL ---- maybe on DB side?
     return db
-        .getCredentials(email)
-        .then((credentials) => {
-            const { user_id, saved_pass } = credentials.rows[0];
-            console.log("user_id from DB when selecting only pass", user_id);
-            return compare(password, saved_pass);
-        })
-         .then((isMatch) => {
-             console.log("Does password match db? ", isMatch);
-            return isMatch && db.getUserCookieInfo(email);
-        })
+        .setProfile(city, age, website, req.session.user_id)
         .then(({ rows }) => {
-            req.session = rows[0];
-            console.log(
-                ">> req.session.user_id /login AFTER",
-                req.session.user_id
-            );
-          res.redirect("/profile");
+            return res.redirect("/profile"); // !!! FINAL --- go to sign
         })
         .catch((err) => {
-            console.log("!!! Error in compare passwords", err);
-            return res.render("login", layoutMain("ERROR IN Login")); // +++ error handlebar
+            console.log("error in setprofile", err);
+            return res.render("set_profile", layoutMain("ERROR IN SETPROFILE")); // +++ error handlebar
+        });
+});
+
+// ------------------ Edit Profile --------------------- //
+
+app.get("/editprofile", (req, res) => {
+    res.render("edit_profile", layoutMain("Edit Profile"));
+});
+
+app.post("/editprofile", (req, res) => {
+    editProfile(req)
+        .then(({ rows }) => {
+            return res.redirect("/profile"); // !!! FINAL --- go to sign
+        })
+        .catch((err) => {
+            console.log("error in editprofile", err);
+            return res.render(
+                "edit_profile",
+                layoutMain("ERROR IN editPROFILE")
+            ); // +++ error handlebar
         });
 });
 
 // ---- Sign ---- //
 
 app.get("/sign", (req, res) => {
-    console.log("req.session.user_id /sign", req.session.user_id);
-    res.render("sign", layoutMain("Sign now!"));
+    hasUserSigned(req)
+        ? res.redirect("/thanks")
+        : res.render("sign", layoutMain("Sign now!"));
 });
 
 app.post("/sign", (req, res) => {
-    console.log("req.session.user_id /sign", req.session.user_id);
     const { signature } = req.body;
 
     // // Protect against Clickjacking --- ??? where does it go? -- for sure b4 sending stuff to client, but on what route(s)?
@@ -189,9 +218,8 @@ app.post("/sign", (req, res) => {
         .signPetition(signature, req.session.user_id) // +++ gotta check for if user has really signed canvas. prob not here
         .then((results) => {
             req.session.hasSigned = true;
-            console.log("req.session with COOKIE VAL", req.session);
             // return res.redirect("/thanks"); // ??? is redirecting even if error
-            return res.redirect("/profile"); // *** just for testing of displ sign
+            return res.redirect("/thanks"); // *** just for testing of displ sign
         })
         .catch((err) => {
             console.log("error in signPetition", err);
@@ -200,14 +228,6 @@ app.post("/sign", (req, res) => {
 
 //================== Other Routes ==================//
 
-/////// add a logout route to clear cookies
-app.get("/clear", (req, res) => {
-    console.log("req.session /clear BEFORE", req.session);
-    req.session = null;
-    console.log("req.session /clear AFTER", req.session);
-    res.redirect("/");
-});
-
 app.get("*", (req, res) => {
     if (req.url !== "/favicon.ico") {
         console.log("----in STAR ROUTE");
@@ -215,7 +235,9 @@ app.get("*", (req, res) => {
     }
 });
 
-app.listen(process.env.PORT || 8080, () => console.log(">> listening... http://localhost:8080"));
+app.listen(process.env.PORT || 8080, () =>
+    console.log(">> listening... http://localhost:8080")
+);
 
 // if it's deployed live on heroku, we need to listen to heroku's port instead of 8080
 // heroku will create this prop PORT in our process environment
