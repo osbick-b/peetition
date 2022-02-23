@@ -8,7 +8,7 @@ const db = spicedPg("postgres:postgres:postgres@localhost:5432/petition"); // lo
 // ------------ Register ------------- //
 module.exports.registerUser = (first, last, email, password) => {
     return db.query(
-        "INSERT INTO users (first, last, email, password) VALUES ($1, $2, $3, $4) RETURNING id, first",
+        "INSERT INTO users (first, last, email, password) VALUES ($1, $2, $3, $4) RETURNING id AS user_id, first, last",
         [first, last, email, password]
     );
 };
@@ -16,9 +16,15 @@ module.exports.registerUser = (first, last, email, password) => {
 // ------------ Login ------------- //
 
 module.exports.getCredentials = (email) => {
-    console.log(">> in DB checkCreds -->", email);
     return db.query(
-        "SELECT id AS user_id, first, password AS saved_pass FROM users WHERE email = $1 ",
+        "SELECT password AS saved_pass FROM users WHERE email = $1 ",
+        [email]
+    );
+};
+
+module.exports.getUserCookieInfo = (email) => {
+    return db.query(
+        "SELECT id AS user_id, first, last FROM users WHERE email = $1 ",
         [email]
     );
 };

@@ -30,5 +30,7 @@
     "url": "https://github.com/spicedacademy/rue-petition/issues"
   },
   "homepage": "https://github.com/spicedacademy/rue-petition#readme",
+  "devDependencies": {},
+  "keywords": [],
   "description": ""
 }

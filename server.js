@@ -49,7 +49,7 @@ app.get("/logout", (req, res) => {
 });
 
 app.get("/thanks", (req, res) => {
-    db.getCanvasSignature(req.session.id)
+    db.getCanvasSignature(req.session.user_id)
         .then((results) => {
             // return res.render("testprofile", layoutMain("Test Profile", signature));
             return res.render(
@@ -78,7 +78,7 @@ app.get("/signers", (req, res) => {
 app.get("/profile", (req, res) => {
     console.log(">> req.session /profile", req.session);
     return db
-        .getUserProfile(req.session.id)
+        .getUserProfile(req.session.user_id)
         .then((results) => {
             console.log(">> results in getUserProfile.then", results.rows[0]);
             res.render(
@@ -94,7 +94,7 @@ app.get("/profile", (req, res) => {
 //*********************TEST ROUTE*****************//
 app.get("/test", (req, res) => {
     console.log(">> req.session /test", req.session);
-    db.getCanvasSignature(req.session.id)
+    db.getCanvasSignature(req.session.user_id)
         .then((signature) => {
             return res.render(
                 "testprofile",
@@ -145,28 +145,24 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
     const { email, password } = req.body;
     console.log("input /login", email, password);
-    // return db
-    //     .getCredentials(email)
-    //     .then((credentials) => {
-    //         const { user_id, saved_pass } = credentials.rows[0];
-    //         console.log(
-    //             ">> getting from DB -- user credentials ",
-    //             credentials.rows[0]
-    //         );
-    //         return compare(password, saved_pass);
-    //     })
     return db
         .getCredentials(email)
-        .then((results) => {
-            const { saved_pass } = results.rows[0];
+        .then((credentials) => {
+            const { user_id, saved_pass } = credentials.rows[0];
+            console.log("user_id from DB when selecting only pass", user_id);
             return compare(password, saved_pass);
         })
-        .then((isMatch) => {
-            console.log("EMAIL from outer scope", email);
-            console.log("Does password match db? ", isMatch);
-            req.session = isMatch.rows[0];
-            console.log(">> req.session /login AFTER", req.session);
-            return res.redirect("/profile");
+         .then((isMatch) => {
+             console.log("Does password match db? ", isMatch);
+            return isMatch && db.getUserCookieInfo(email);
+        })
+        .then(({ rows }) => {
+            req.session = rows[0];
+            console.log(
+                ">> req.session.user_id /login AFTER",
+                req.session.user_id
+            );
+          res.redirect("/profile");
         })
         .catch((err) => {
             console.log("!!! Error in compare passwords", err);
@@ -177,12 +173,12 @@ app.post("/login", (req, res) => {
 // ---- Sign ---- //
 
 app.get("/sign", (req, res) => {
-    console.log("req.session.id /sign", req.session.id);
+    console.log("req.session.user_id /sign", req.session.user_id);
     res.render("sign", layoutMain("Sign now!"));
 });
 
 app.post("/sign", (req, res) => {
-    console.log("req.session.id /sign", req.session.id);
+    console.log("req.session.user_id /sign", req.session.user_id);
     const { signature } = req.body;
 
     // // Protect against Clickjacking --- ??? where does it go? -- for sure b4 sending stuff to client, but on what route(s)?
@@ -190,7 +186,7 @@ app.post("/sign", (req, res) => {
     // res.setHeader("X-Frame-Options", "DENY");
 
     return db
-        .signPetition(signature, req.session.id) // +++ gotta check for if user has really signed canvas. prob not here
+        .signPetition(signature, req.session.user_id) // +++ gotta check for if user has really signed canvas. prob not here
         .then((results) => {
             // req.session.hasSigned = true;
             // return res.redirect("/thanks"); // ??? is redirecting even if error
