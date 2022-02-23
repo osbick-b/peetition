@@ -136,7 +136,7 @@ app.post("/register", (req, res) => {
               });
 });
 
-//---- Login ----// +++ NOT DONE YET
+//---- Login ----//
 
 app.get("/login", (req, res) => {
     res.render("login", layoutMain("Login"));
@@ -188,7 +188,8 @@ app.post("/sign", (req, res) => {
     return db
         .signPetition(signature, req.session.user_id) // +++ gotta check for if user has really signed canvas. prob not here
         .then((results) => {
-            // req.session.hasSigned = true;
+            req.session.hasSigned = true;
+            console.log("req.session with COOKIE VAL", req.session);
             // return res.redirect("/thanks"); // ??? is redirecting even if error
             return res.redirect("/profile"); // *** just for testing of displ sign
         })
@@ -214,4 +215,7 @@ app.get("*", (req, res) => {
     }
 });
 
-app.listen(8080, () => console.log(">> listening... http://localhost:8080"));
+app.listen(process.env.PORT || 8080, () => console.log(">> listening... http://localhost:8080"));
+
+// if it's deployed live on heroku, we need to listen to heroku's port instead of 8080
+// heroku will create this prop PORT in our process environment

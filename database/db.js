@@ -1,7 +1,10 @@
 const { use } = require("express/lib/application");
 const spicedPg = require("spiced-pg");
 
-const db = spicedPg("postgres:postgres:postgres@localhost:5432/petition"); // localhost:5432/dbname ---- port that postgres uses by default
+const db = spicedPg(process.env.DATABASE_URL || `postgres:postgres:postgres@localhost:5432/petition`); // localhost:5432/dbname ---- port that postgres uses by default
+
+/////// FOR HEROKU -- we're gonna have another version (empty) of our tables and stuff deployed on heroku
+// 
 
 //====================================================================//
 

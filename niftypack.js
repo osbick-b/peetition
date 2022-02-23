@@ -1,3 +1,5 @@
+const req = require("express/lib/request");
+
 module.exports.layoutMain = (title, data) => {
     const hdlbConfig = {
         dataToRender: data,
@@ -7,3 +9,7 @@ module.exports.layoutMain = (title, data) => {
     return hdlbConfig;
 };
 
+module.exports.checkForSign = (req) => {
+    console.log("req.session --- in fn checkForSign", req.session);
+    return req.session.hasSigned;
+}
