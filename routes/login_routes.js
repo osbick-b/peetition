@@ -1,6 +1,13 @@
 const express = require("express");
 const router = express.Router();
 
+const db = require("../database/db");
+const mw = require("../route_middleware");
+const { compare, hash } = require("../bc");
+
+const { layoutMain, editProfile, logErr } = require("../niftypack");
+
+
 // ======= Middleware ======= //
 
 router.use((req, res, next) => {

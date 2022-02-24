@@ -1,8 +1,6 @@
 //////////// ROUTE MIDDLEWARE //////////////
 
-const { Test } = require("supertest");
-const { Test } = require("supertest");
-
+// const { Test } = require("supertest");
 
     module.exports.logRouteInfo = (req, res, next) => {
     if (req.url !== "/favicon.ico") {

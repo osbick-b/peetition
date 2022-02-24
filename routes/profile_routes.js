@@ -2,6 +2,15 @@
 const express = require("express");
 const router = express.Router();
 
+
+const db = require("../database/db");
+const mw = require("../route_middleware");
+const { compare, hash } = require("../bc");
+
+const { layoutMain, editProfile, logErr } = require("../niftypack");
+
+module.exports = router;
+
 // ======= Middleware ======= //
 
 router.use((req,res,next) => {
@@ -10,12 +19,13 @@ router.use((req,res,next) => {
 });
 
 
+
 /////////// PROFILE ROUTES ////////////
 
 
 // ------------------ GET Profile --------------------- //
 
-router.get("/profile", mw.requireLoggedIn, (req, res) => {
+router.get("/", mw.requireLoggedIn, (req, res) => {
     return db
         .getProfile(req.session.user_id)
         .then((results) => {
@@ -31,17 +41,17 @@ router.get("/profile", mw.requireLoggedIn, (req, res) => {
 
 // ------------------ Set Profile --------------------- //
 
-router.get("/setprofile", mw.requireLoggedIn, (req, res) => {
+router.get("/set", mw.requireLoggedIn, (req, res) => {
     res.render("set_profile", layoutMain("Set Profile"));
 });
 
-app.post("/setprofile", mw.requireLoggedIn, (req, res) => {
+router.post("/set", mw.requireLoggedIn, (req, res) => {
     const { city, age, website } = req.body;
     // +++ VALIDATE URL ---- maybe on DB side?
     return db
         .setProfile(city, age, website, req.session.user_id)
         .then(({ rows }) => {
-            return res.redirect("/profile"); // !!! FINAL --- go to sign
+            return res.redirect(""); // !!! FINAL --- go to sign
         })
         .catch((err) => {
             logErr(err, "registering user");
@@ -51,14 +61,14 @@ app.post("/setprofile", mw.requireLoggedIn, (req, res) => {
 
 // ------------------ Edit Profile --------------------- //
 
-app.get("/editprofile", mw.requireLoggedIn, (req, res) => {
+router.get("/edit", mw.requireLoggedIn, (req, res) => {
     res.render("edit_profile", layoutMain("Edit Profile"));
 });
 
-app.post("/editprofile", mw.requireLoggedIn, (req, res) => {
+router.post("/edit", mw.requireLoggedIn, (req, res) => {
     editProfile(req)
         .then(({ rows }) => {
-            return res.redirect("/profile"); // !!! FINAL --- go to sign
+            return res.redirect(""); // !!! FINAL --- go to sign
         })
         .catch((err) => {
             logErr(err, "registering user");
