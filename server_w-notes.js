@@ -235,9 +235,14 @@ app.get("*", (req, res) => {
     }
 });
 
-app.listen(process.env.PORT || 8080, () =>
-    console.log(">> listening... http://localhost:8080")
-);
+
+// IF CLAUSE --- FOR TESTING WITH SUPERTEST
+// bc you dont want supertest to accidentally be running
+if (require.main == module) {
+    app.listen(process.env.PORT || 8080, () =>
+        console.log(">> listening... http://localhost:8080")
+    );
+}
 
 // if it's deployed live on heroku, we need to listen to heroku's port instead of 8080
 // heroku will create this prop PORT in our process environment

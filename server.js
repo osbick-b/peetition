@@ -1,19 +1,27 @@
 const express = require("express");
 const app = express();
 const db = require("./database/db");
-const cookieSession = require("cookie-session");
 
+const cookieSession = require("cookie-session");
 const mw = require("./route_middleware");
+
+const profileRoute = require("/profile_routes");
+const signersRoute = require("/signers_routes");
+const loginRoute = require("/login_routes");
+const registerRoute = require("/register_routes");
+const signRoute = require("/sign_routes");
+const otherRoute = require("/other_routes");
 
 const { engine } = require("express-handlebars");
 const { compare, hash } = require("./bc");
+
 const {
     layoutMain,
     editProfile,
     logErr,
 } = require("./niftypack");
 
-// =============== Middleware =================== //
+// // =============== Middleware =================== //
 
 app.engine("handlebars", engine());
 app.set("view engine", "handlebars");
@@ -32,21 +40,21 @@ app.use(
 );
 
 app.use(mw.logRouteInfo);
-// app.use((req, res, next) => {
-//     if (req.url !== "/favicon.ico") {
-//         console.log(`${req.method}  ${req.url}\t`, req.session);
-//         next();
-//     }
-// });
+app.use((req, res, next) => {
+    if (req.url !== "/favicon.ico") {
+        console.log(`${req.method}  ${req.url}\t`, req.session);
+        next();
+    }
+});
 
 // ================ GET ONLY Routes ================== //
 
 // +++ define permissions according to user session/if signed
 
-// app.get("", (req,res) => {
-// console.log(">> req.session /post", req.session);
+app.get("", (req,res) => {
+console.log(">> req.session /post", req.session);
 
-// });
+});
 
 app.get("/", (req, res) => {
     return res.redirect("/signers"); // --- editing with whatever route we're working on now. !!! check for final version
@@ -104,12 +112,14 @@ app.get("/signers/:city", (req, res) => {
         });
 });
 
+// ------ Logout ----- //
+
 app.get("/logout", mw.requireLoggedIn, (req, res) => {
     req.session = null;
     return res.redirect("/");
 });
 
-//================== GET POST Routes ===================//
+// ================== GET POST Routes ===================//
 
 //---- Login ----//
 
@@ -230,7 +240,7 @@ app.post("/sign", mw.requireLoggedIn, mw.requireNotSigned, (req, res) => {
         });
 });
 
-//================== Other Routes ==================//
+// ================== Other Routes ==================//
 
 app.get("*", (req, res) => {
     if (req.url !== "/favicon.ico") {

@@ -1,6 +1,10 @@
 //////////// ROUTE MIDDLEWARE //////////////
 
-module.exports.logRouteInfo = (req, res, next) => {
+const { Test } = require("supertest");
+const { Test } = require("supertest");
+
+
+    module.exports.logRouteInfo = (req, res, next) => {
     if (req.url !== "/favicon.ico") {
         console.log(`${req.method}  ${req.url}\t`, req.session);
         next();
@@ -20,8 +24,6 @@ module.exports.requireHasSigned = (req, res, next) => {
 };
 
 module.exports.requireNotSigned = (req, res, next) => {
-    console.log(
-        req.session.has_signed
-    );
-!req.session.has_signed ? next() : res.redirect("/thanks");
+    console.log(req.session.has_signed);
+    !req.session.has_signed ? next() : res.redirect("/thanks");
 };
