@@ -3,15 +3,9 @@ const app = express();
 const db = require("./database/db");
 const cookieSession = require("cookie-session");
 
-const mw = require("./route_middleware");
-
 const { engine } = require("express-handlebars");
 const { compare, hash } = require("./bc");
-const {
-    layoutMain,
-    editProfile,
-    logErr,
-} = require("./niftypack");
+const { layoutMain, hasUserSigned, editProfile } = require("./niftypack");
 
 // =============== Middleware =================== //
 
@@ -25,19 +19,18 @@ app.use(
     cookieSession({
         secret: "i'm gay",
         maxAge: 1000 * 60 * 60 * 24 * 14,
-        httpOnly: true,
+        httpOnly: true, // --- *** was the cause of the cookie problem -- after all, this aint no http request :P
         sameSite: true,
-        // secure: true, // --- *** was the cause of the cookie problem
+        // secure: true, // --- *** issues with this one too
     })
 );
 
-app.use(mw.logRouteInfo);
-// app.use((req, res, next) => {
-//     if (req.url !== "/favicon.ico") {
-//         console.log(`${req.method}  ${req.url}\t`, req.session);
-//         next();
-//     }
-// });
+app.use((req, res, next) => {
+    if (req.url !== "/favicon.ico") {
+        console.log(`${req.method}\t${req.url}`);
+        next();
+    }
+});
 
 // ================ GET ONLY Routes ================== //
 
@@ -49,10 +42,11 @@ app.use(mw.logRouteInfo);
 // });
 
 app.get("/", (req, res) => {
+    console.log(">> req.session /post", req.session);
     return res.redirect("/signers"); // --- editing with whatever route we're working on now. !!! check for final version
 });
 
-app.get("/thanks", mw.requireLoggedIn, mw.requireHasSigned, (req, res) => {
+app.get("/thanks", (req, res) => {
     db.getCanvasSignature(req.session.user_id)
         .then((results) => {
             // return res.render("testprofile", layoutMain("Test Profile", signature));
@@ -66,7 +60,7 @@ app.get("/thanks", mw.requireLoggedIn, mw.requireHasSigned, (req, res) => {
         });
 });
 
-app.get("/profile", mw.requireLoggedIn, (req, res) => {
+app.get("/profile", (req, res) => {
     return db
         .getProfile(req.session.user_id)
         .then((results) => {
@@ -76,7 +70,7 @@ app.get("/profile", mw.requireLoggedIn, (req, res) => {
             );
         })
         .catch((err) => {
-            logErr(err, "getting user profile");
+            console.log("error in getProfile", err);
         });
 });
 
@@ -86,7 +80,7 @@ app.get("/signers", (req, res) => {
             res.render("signerslist", layoutMain("List of Signers", rows));
         })
         .catch((err) => {
-            logErr(err, "getting signers list");
+            console.log("error in getListSigners", err);
         });
 });
 
@@ -100,11 +94,11 @@ app.get("/signers/:city", (req, res) => {
             );
         })
         .catch((err) => {
-            logErr(err, "getting signers by city");
+            console.log("error in getSignersByCity", err);
         });
 });
 
-app.get("/logout", mw.requireLoggedIn, (req, res) => {
+app.get("/logout", (req, res) => {
     req.session = null;
     return res.redirect("/");
 });
@@ -113,11 +107,11 @@ app.get("/logout", mw.requireLoggedIn, (req, res) => {
 
 //---- Login ----//
 
-app.get("/login", mw.requireLoggedOut, (req, res) => {
+app.get("/login", (req, res) => {
     res.render("login", layoutMain("Login"));
 });
 
-app.post("/login", mw.requireLoggedOut, (req, res) => {
+app.post("/login", (req, res) => {
     const { email, password } = req.body;
     return db
         .getCredentials(email)
@@ -126,26 +120,25 @@ app.post("/login", mw.requireLoggedOut, (req, res) => {
             return compare(password, saved_pass);
         })
         .then((isMatch) => {
-            return isMatch && db.getCookieInfo(email);
+            return isMatch && db.getUserCookieInfo(email);
         })
         .then(({ rows }) => {
-            console.log("from DB >> cookie info at login", rows[0]);
             req.session = rows[0];
             res.redirect("/profile");
         })
         .catch((err) => {
-            logErr(err, "logging in");
+            console.log("!!! Error in compare passwords", err);
             return res.render("login", layoutMain("ERROR IN Login")); // +++ error handlebar
         });
 });
 
 //---- Register ----//
 
-app.get("/register", mw.requireLoggedOut, (req, res) => {
+app.get("/register", (req, res) => {
     res.render("register", layoutMain("Register"));
 });
 
-app.post("/register", mw.requireLoggedOut, (req, res) => {
+app.post("/register", (req, res) => {
     const { first, last, email, password, passconfirm } = req.body;
     return password === "" || password !== passconfirm
         ? res.render("register", layoutMain("INVALID PASS")) // +++ error handlebar
@@ -158,7 +151,7 @@ app.post("/register", mw.requireLoggedOut, (req, res) => {
                   return res.redirect("/sign");
               })
               .catch((err) => {
-                  logErr(err, "registering user");
+                  console.log("error in register user", err);
                   return res.render(
                       "register",
                       layoutMain("ERROR IN REGISTER")
@@ -168,11 +161,11 @@ app.post("/register", mw.requireLoggedOut, (req, res) => {
 
 // ------------------ Set Profile --------------------- //
 
-app.get("/setprofile", mw.requireLoggedIn, (req, res) => {
+app.get("/setprofile", (req, res) => {
     res.render("set_profile", layoutMain("Set Profile"));
 });
 
-app.post("/setprofile", mw.requireLoggedIn, (req, res) => {
+app.post("/setprofile", (req, res) => {
     const { city, age, website } = req.body;
     // +++ VALIDATE URL ---- maybe on DB side?
     return db
@@ -181,24 +174,24 @@ app.post("/setprofile", mw.requireLoggedIn, (req, res) => {
             return res.redirect("/profile"); // !!! FINAL --- go to sign
         })
         .catch((err) => {
-            logErr(err, "registering user");
+            console.log("error in setprofile", err);
             return res.render("set_profile", layoutMain("ERROR IN SETPROFILE")); // +++ error handlebar
         });
 });
 
 // ------------------ Edit Profile --------------------- //
 
-app.get("/editprofile", mw.requireLoggedIn, (req, res) => {
+app.get("/editprofile", (req, res) => {
     res.render("edit_profile", layoutMain("Edit Profile"));
 });
 
-app.post("/editprofile", mw.requireLoggedIn, (req, res) => {
+app.post("/editprofile", (req, res) => {
     editProfile(req)
         .then(({ rows }) => {
             return res.redirect("/profile"); // !!! FINAL --- go to sign
         })
         .catch((err) => {
-            logErr(err, "registering user");
+            console.log("error in editprofile", err);
             return res.render(
                 "edit_profile",
                 layoutMain("ERROR IN editPROFILE")
@@ -208,11 +201,13 @@ app.post("/editprofile", mw.requireLoggedIn, (req, res) => {
 
 // ---- Sign ---- //
 
-app.get("/sign", mw.requireLoggedIn, mw.requireNotSigned, (req, res) => {
-    res.render("sign", layoutMain("Sign now!"));
+app.get("/sign", (req, res) => {
+    hasUserSigned(req)
+        ? res.redirect("/thanks")
+        : res.render("sign", layoutMain("Sign now!"));
 });
 
-app.post("/sign", mw.requireLoggedIn, mw.requireNotSigned, (req, res) => {
+app.post("/sign", (req, res) => {
     const { signature } = req.body;
 
     // // Protect against Clickjacking --- ??? where does it go? -- for sure b4 sending stuff to client, but on what route(s)?
@@ -222,11 +217,12 @@ app.post("/sign", mw.requireLoggedIn, mw.requireNotSigned, (req, res) => {
     return db
         .signPetition(signature, req.session.user_id) // +++ gotta check for if user has really signed canvas. prob not here
         .then((results) => {
+            req.session.hasSigned = true;
             // return res.redirect("/thanks"); // ??? is redirecting even if error
             return res.redirect("/thanks"); // *** just for testing of displ sign
         })
         .catch((err) => {
-            logErr(err, "registering user");
+            console.log("error in signPetition", err);
         });
 });
 

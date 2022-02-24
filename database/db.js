@@ -20,9 +20,12 @@ module.exports.getCredentials = (email) => {
     );
 };
 
-module.exports.getUserCookieInfo = (email) => {
+module.exports.getCookieInfo = (email) => {
     return db.query(
-        "SELECT id AS user_id, first, last FROM users WHERE email = $1 ",
+        `SELECT users.id AS user_id, users.first, users.last, signatures.user_id AS has_signed
+        FROM users LEFT JOIN signatures 
+        ON users.id = signatures.user_id 
+        WHERE email = $1`,
         [email]
     );
 };

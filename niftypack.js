@@ -1,5 +1,7 @@
-const req = require("express/lib/request");
+ const req = require("express/lib/request");
 
+
+ // ======= Functions ======= //
 module.exports.layoutMain = (title, data = null) => {
     const hdlbConfig = {
         dataToRender: data,
@@ -8,11 +10,6 @@ module.exports.layoutMain = (title, data = null) => {
     };
     return hdlbConfig;
 };
-
-module.exports.hasUserSigned = (req) => {
-    console.log("--- you've already signed!");
-    return req.session.hasSigned;
-}
 
 // -------- Edit Profile -------- // +++ NOT DONE
 module.exports.editProfile = (req) => {
@@ -42,3 +39,7 @@ module.exports.editProfile = (req) => {
             website,
             req.session.user_id)
 };
+
+module.exports.logErr = (err, where) => {
+  console.log(`>>> ERROR in: ${where}`, err);
+}
