@@ -10,7 +10,7 @@ const signersRoute = require("/signers_routes");
 const loginRoute = require("/login_routes");
 const registerRoute = require("/register_routes");
 const signRoute = require("/sign_routes");
-const otherRoute = require("/other_routes");
+const thanksRoute = require("/thanks_routes");
 
 const { engine } = require("express-handlebars");
 const { compare, hash } = require("./bc");
