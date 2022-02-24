@@ -7,7 +7,7 @@ const { compare, hash } = require("../bc");
 
 const { layoutMain, editProfile, logErr } = require("../niftypack");
 
-
+module.exports = router;
 // ======= Middleware ======= //
 
 router.use((req, res, next) => {
