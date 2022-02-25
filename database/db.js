@@ -100,7 +100,6 @@ module.exports.getCanvasSignature = (user_id) => {
 // UPSERT THINGIE
 module.exports.updateRegister = (userInput, user_id) => {
     const u = userInput;
-    console.log("userInput inside DB in updateReg:", userInput);
     return db.query(
         `UPDATE users 
         SET first = $1, last = $2, email = $3
@@ -124,11 +123,13 @@ module.exports.updatePassword = (userInput, user_id) => {
 
 module.exports.updateProfile = (userInput, user_id) => {
     const u = userInput;
-    console.log("userInput inside DB in updateProfile:", userInput);
     return db.query(
-        `INSERT INTO user_profiles (city, age, website, user_id) 
-        VALUES ($1, $2, $3, $4) 
-        RETURNING *`,
+        `INSERT INTO user_profiles (city, age, website, user_id)
+        VALUES ($1, $2, $3, $4)
+        ON CONFLICT (user_id)
+        DO UPDATE SET city = $1, age = $2, website = $3
+        WHERE user_profiles.user_id = $4
+        RETURNING city, age, website, user_id`,
         [u.city, u.age, u.website, user_id]
     );
 };
