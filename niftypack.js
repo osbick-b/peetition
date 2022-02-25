@@ -41,21 +41,21 @@ module.exports.editProfile = (req) => {
     // all logic will be done here
     const userInput = req.body; // +++ VALIDATE URL
     const user_id = req.session.user_id;
-    console.log("in nif -- userInput editProfile (req.body) ", userInput);
     let responseObj = {};
 
+
+    // +++ password update
     return db
         .updateRegister(userInput, user_id)
         .then((results) => {
             const testObj = {test1: 2, test3:4};
             responseObj = results.rows[0];
-            console.log("responseObj after updateRegister", responseObj);
             return db.updateProfile(userInput, user_id)
             // !!!!!!!!! THE PROBLEM IS HERE
         }).then((results) => {
-            console.log("results.rows[0] on updateProfile", results.rows[0]);
+            // console.log("results.rows[0] on updateProfile", results.rows[0]);
             responseObj = { ...responseObj, ...results.rows[0]};
-            console.log("responseobj after merging", responseObj);
+            // console.log("responseobj after merging", responseObj);
             return responseObj; // !!! at the very end only
         })
         .catch((err) => {
