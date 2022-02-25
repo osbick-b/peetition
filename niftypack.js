@@ -43,15 +43,17 @@ module.exports.editProfile = (req) => {
     const user_id = req.session.user_id;
     let responseObj = {};
 
+    
 
+    // return req.body.password === ""
+    //     ? // CASE no password to update
+    //     : ;
     // +++ password update
-    return db
-        .updateRegister(userInput, user_id)
+    
+    db.updateRegister(userInput, user_id)
         .then((results) => {
-            const testObj = {test1: 2, test3:4};
             responseObj = results.rows[0];
-            return db.updateProfile(userInput, user_id)
-            // !!!!!!!!! THE PROBLEM IS HERE
+            db.updateProfile(userInput, user_id)
         }).then((results) => {
             // console.log("results.rows[0] on updateProfile", results.rows[0]);
             responseObj = { ...responseObj, ...results.rows[0]};

@@ -65,14 +65,19 @@ router.get("/edit", mw.requireLoggedIn, (req, res) => {
 });
 
 router.post("/edit", mw.requireLoggedIn, (req, res) => {
+    if (
+        req.body.password !== "" &&
+        req.body.password !== req.body.passconfirm
+    ) {
+        return res.redirect("/edit"); // +++ ADD SOMEHOW error handlebar
+    }
+    /// check password situation
     editProfile(req) // +++ validate input --- go to nif
         .then((responseObj) => {
             console.log(">>> editProfile END -- responseObj >> ", responseObj);
             // setting cookie with updated info:
             req.session.first = responseObj.first;
             req.session.last = responseObj.last;
-            //// !!!! FIRST EDIT PROFILE then DO THE COOKIE THING. refactor later if wanted
-            console.log("req.session after qpplying neq data", req.session);
             return res.redirect("/profile");
         })
         .catch((err) => {
