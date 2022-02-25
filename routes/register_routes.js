@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 
-
 const db = require("../database/db");
 const mw = require("../route_middleware");
 const { compare, hash } = require("../bc");
@@ -13,14 +12,12 @@ module.exports = router;
 // ======= Middleware ======= //
 
 router.use((req, res, next) => {
-    console.log(`${req.method}: ${req.url} in the profile module`);
     next();
 });
 
 /////////// REGISTER ROUTES ////////////
 
 // ------------------ GET REGISTER --------------------- //
-
 
 //---- Register ----//
 
@@ -38,7 +35,12 @@ router.post("/", mw.requireLoggedOut, (req, res) => {
               })
               .then((results) => {
                   req.session = results.rows[0]; // getting from db --> id, first, last
-                  return res.redirect("/sign");
+                  req.session.newUser = true; //set 1st session cookie to allow access to profile/set
+                  console.log(
+                      ">> in REGISTER_routes - req.session.newUser",
+                      req.session.newUser
+                  );
+                  return res.redirect("/profile/set");
               })
               .catch((err) => {
                   logErr(err, "registering user");

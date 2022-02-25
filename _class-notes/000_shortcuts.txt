@@ -1,0 +1,120 @@
+//NAV
+go back/forward -------- alt <-- -->
+
+split editor --------------------- csa /
+view: focus right editor group --- ctrl /
+view: focus left editor group ---- ctrl shift /
+view: close all editors in grp --- ctrl K W
+join editor ---------------------- ctrl K ctrl shift ]
+move editor into group ----------- shift alt <-- -->
+move editor ---------------------- ctrl shift pgUp/pgDown
+
+view: focus in sidebar ----------- ctrl 0;
+
+insert cursor above/below ------ ctrl alt up/down
+undo cursor action ------------- ctrl U
+
+
+
+accept suggestion -------------- shift enter
+
+
+//SEARCH
+search toggle match case ---- alt C
+search toggle match whole word ---- alt W
+search again -------------------- ctrl shift R
+increase context lines ---------- alt =
+decrease                          alt -
+search delete file results ------ ctrl shift bksp
+focus next result --------------- F4
+
+find next/prev ----------- (shift) enter
+
+
+
+
+
+//EXTENSIONS
+run code ------------- ctrl alt N
+run custom command --- ctrl alt K
+
+
+
+//EDITOR
+
+toggle line comment ----- ctrl / 
+toggle block comment ---- xxx (shift alt A) 
+
+toggle comma --------------- ctrl ,
+toggle semicolon ----------- ctrl ; 
+toggle colon --------------- ctrl : (ctrl shift ;)  
+
+align whitespace ----------- alt -
+indent/outdent ------------- ctrl [  ]
+selection shrink/expand ---- shift alt <-- --> 
+
+
+go to bracket ------- ctrl shift /
+select to bracket --- ctrl shift ]
+
+
+//quick select
+inside  <> ---- (ctrl K shift ,) - ctrl K < 
+        {} ---- (ctrl K shift ]) - ctrl K {
+        () ---- (ctrl K shift 9) - ctrl K (
+        [] ---- (ctrl K [) ------- ctrl K [
+        '' ---- (ctrl K ') ------- ctrl K '
+        `` ---- (ctrl K ´) ------- ctrl K ´
+        " ' ` - (ctrl K Ç) ------- ctrl K Ç
+            
+outside <> ---- (ctrl K shift .) - ctrl K > 
+        {} ---- (ctrl K shift ]) - ctrl K }
+        () ---- (ctrl K shift 0) - ctrl K )
+        [] ---- (ctrl K [) ------- ctrl K ]
+
+jumpy -------------------- ctrl alt J
+
+//COLONIZE
+; and stay --------------- alt enter 
+; and jump to end -------- shift alt enter 
+; and jump to next line -- csa enter 
+
+re
+//BRACKETEER
+swap     brackets ------- csa [
+         quotes --------- csa ´
+delete   brackets ------- csa ]
+         quotes --------- csa ~
+sel cont brackets ------- csa P
+         quotes --------- csa Ç
+
+//SNIPPET
+jump to prevent snippet pceholder --- shift tab
+create snippet from selection -- ctrl K ctrl shift S 
+
+
+delete full line --------- ctrl shift K
+expand line selection ---- ctrl L
+insert line above -------- ctrl shift enter
+insert line below -------- ctrl enter
+
+replace --------------- ctrl H
+find next ------------- F3
+find next selection --- ctrl F3 / enter
+          previous --------- ctrl shift F3 / shift enter
+select all occurences - alt enter
+
+replace --------------- ctrl H
+replace with next val - ctrl shift .
+replace with prev val - ctrl shift ,
+
+fold --------------------- ctrl shift ´
+unfold ------------------- ctrl shift [
+fold all ----------------- ctrl K ctrl 0
+unfold all ----------------- ctrl K ctrl J
+fold all except selected --- ctrl K ctrl -
+unfold all except selected - ctrl K ctrl =
+fold recursively --------- ctrl K ctrl ´
+unfold recursively --------- ctrl K ctrl [
+fold level 1-7 ----------- ctrl L ctrl 1-7
+toggle fold -------------- ctrl K ctrl L

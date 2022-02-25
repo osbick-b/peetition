@@ -48,24 +48,18 @@ module.exports.setProfile = (city, age, website, user_id) => {
 };
 
 // ------------- Edit Profile ------------- // +++ NOT DONE JUST COPIED
-module.exports.editProfile = (city, age, website, user_id) => {
-    return db.query(
-        "INSERT INTO user_profiles (city, age, website, user_id) VALUES ($1, $2, $3, $4) RETURNING *",
-        [city, age, website, user_id]
-    );
-};
-
-// -------------- Get Profile -------------- //
-module.exports.getProfile = (user_id) => {
-    return db.query(
-        `SELECT users.first, users.last, users.email, user_profiles.city, user_profiles.age, user_profiles.website
+module.exports.editProfile = // ++++ UPSERT THINGIE goes here
+    // -------------- Get Profile -------------- //
+    module.exports.getProfile = (user_id) => {
+        return db.query(
+            `SELECT users.first, users.last, users.email, user_profiles.city, user_profiles.age, user_profiles.website
                 FROM users
                 FULL OUTER JOIN user_profiles
                 ON users.id = user_profiles.user_id
                 WHERE users.id = $1`,
-        [user_id]
-    );
-};
+            [user_id]
+        );
+    };
 
 // ------------- Sign Petition ------------- //
 
@@ -101,4 +95,40 @@ module.exports.getSignersByCity = (city) => {
 // ------------ Retrieve signature canvas ------------- //
 module.exports.getCanvasSignature = (user_id) => {
     return db.query("SELECT * FROM signatures WHERE user_id = $1", [user_id]);
+};
+
+// UPSERT THINGIE
+module.exports.updateRegister = (userInput, user_id) => {
+    const u = userInput;
+    console.log("userInput inside DB in updateReg:", userInput);
+    return db.query(
+        `UPDATE users 
+        SET first = $1, last = $2, email = $3
+        WHERE id = $4
+        RETURNING first, last, email`,
+        [u.first, u.last, u.email, user_id]
+    );
+};
+
+module.exports.updatePassword = (userInput, user_id) => {
+    const u = userInput;
+    console.log("userInput inside DB in updatePass:", userInput);
+    return db.query(
+        `UPDATE users 
+        SET password = $1
+        WHERE id = $2
+        RETURNING password`,
+        [u.password, user_id]
+    );
+};
+
+module.exports.updateProfile = (userInput, user_id) => {
+    const u = userInput;
+    console.log("userInput inside DB in updateProfile:", userInput);
+    return db.query(
+        `INSERT INTO user_profiles (city, age, website, user_id) 
+        VALUES ($1, $2, $3, $4) 
+        RETURNING *`,
+        [u.city, u.age, u.website, user_id]
+    );
 };

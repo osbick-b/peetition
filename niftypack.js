@@ -1,7 +1,8 @@
- const req = require("express/lib/request");
+const db = require("./database/db");
+const { compare, hash } = require("./bc");
+const req = require("express/lib/request");
 
-
- // ======= Functions ======= //
+// ======= Functions ======= //
 module.exports.layoutMain = (title, data = null) => {
     const hdlbConfig = {
         dataToRender: data,
@@ -13,33 +14,27 @@ module.exports.layoutMain = (title, data = null) => {
 
 // -------- Edit Profile -------- // +++ NOT DONE
 module.exports.editProfile = (req) => {
-    const { first, last, email, password, passconfirm, city, age, website } =
-        req.body;
-    // +++ VALIDATE URL
-    console.log("in nif -- editProfile ",
-        first,
-        last,
-        email,
-        password,
-        passconfirm,
-        city,
-        age,
-        website,
-        req.session.user_id
-    );
+    const userInput = req.body; // +++ VALIDATE URL
+    const user_id = req.session.user_id;
+    console.log("in nif -- userInput editProfile (req.body) ", userInput);
+    let responseObj = {};
+
     return db
-        .editProfile(
-            first,
-            last,
-            email,
-            password,
-            passconfirm,
-            city,
-            age,
-            website,
-            req.session.user_id)
+        .updateRegister(userInput, user_id)
+        .then((results) => {
+            responseObj = results.rows[0];
+            console.log(
+                "responseObj after updateRegister",
+                responseObj
+            );
+            return responseObj;
+        })
+        .catch((err) => {
+            console.log(`>>> ERROR in: nif -- editProfile`, err);
+        });
 };
 
+// ??? how to acces fn from inside the file?
 module.exports.logErr = (err, where) => {
-  console.log(`>>> ERROR in: ${where}`, err);
-}
+    console.log(`>>> ERROR in: ${where}`, err);
+};
