@@ -95,6 +95,7 @@ h1 {
 /* ===== MAIN TEMPLATE LAYOUT ===== */
 .logo {
     color: var(--main-white);
+    margin: 0;
 }
 
 .main-header {
