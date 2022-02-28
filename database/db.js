@@ -34,7 +34,6 @@ module.exports.getCookieInfo = (email) => {
 // ---------- Cookie info by Id ------- //
 
 module.exports.getCookieById = (user_id) => {
-    console.log("in getCookieById", user_id);
     return db.query(
         `SELECT users.id AS user_id, users.first, users.last, signatures.user_id AS has_signed
         FROM users LEFT JOIN signatures 
@@ -134,19 +133,19 @@ module.exports.updateRegister = (userInput, user_id) => {
     );
 };
 
-module.exports.updatePassword = (userInput, user_id) => {
-    const u = userInput;
-    console.log("userInput inside DB in updatePass:", userInput);
+module.exports.updatePassword = (hashedPass, user_id) => {
+    console.log("userInput inside DB in updatePass:", hashedPass);
     return db.query(
         `UPDATE users 
         SET password = $1
         WHERE id = $2
         RETURNING password`,
-        [u.password, user_id]
+        [hashedPass, user_id]
     );
 };
 
 module.exports.updateProfile = (userInput, user_id) => {
+    console.log("in db updateprofile", userInput);
     const u = userInput;
     return db.query(
         `INSERT INTO user_profiles (city, age, website, user_id)

@@ -1,6 +1,7 @@
 const db = require("./database/db");
 const { compare, hash } = require("./bc");
 const req = require("express/lib/request");
+const res = require("express/lib/response");
 
 // ======= Functions ======= //
 
@@ -33,7 +34,7 @@ module.exports.logErr = (err, where) => {
 // // -------- SetCookie ------- //
 
 // module.exports.setUserCookie = (email) => {
-    
+
 // };
 
 // -------- Edit Profile -------- // +++ NOT DONE
@@ -43,22 +44,33 @@ module.exports.editProfile = (req) => {
     const user_id = req.session.user_id;
     let responseObj = {};
 
-    
+    if (
+        userInput.website &&
+        !userInput.website.startsWith("http://" || "https://")
+    ) {
+        throw new Error("website input not valid");
+    }
 
-    // return req.body.password === ""
-    //     ? // CASE no password to update
-    //     : ;
-    // +++ password update
-    
-    db.updateRegister(userInput, user_id)
+    return db
+        .updateRegister(userInput, user_id)
         .then((results) => {
             responseObj = results.rows[0];
-            db.updateProfile(userInput, user_id)
-        }).then((results) => {
-            // console.log("results.rows[0] on updateProfile", results.rows[0]);
-            responseObj = { ...responseObj, ...results.rows[0]};
-            // console.log("responseobj after merging", responseObj);
-            return responseObj; // !!! at the very end only
+            return db.updateProfile(userInput, user_id);
+        })
+        .then((results) => {
+            responseObj = { ...responseObj, ...results.rows[0] };
+            console.log("responseobj after merging", responseObj);
+
+            if (userInput.password !== "") {
+                console.log("gonna update pass");
+                return hash(req.body.password);
+            }
+        })
+        .then((hashedPass) => {
+            if (hashedPass) {
+                // console.log("pass has been hashed");
+                return db.updatePassword(hashedPass, user_id);
+            }
         })
         .catch((err) => {
             console.log(`>>> ERROR in: nif -- editProfile`, err);
