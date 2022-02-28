@@ -1,28 +1,37 @@
-
-
 /* Link to guidelines on styling forms: https://gerireid.com/forms.html  */
 
 /* === Custom Properties === */
 :root {
-    --main-bg-gradient:  linear-gradient(127deg, rgba(119,9,255,1) 28%, rgba(255,41,157,1) 53%, rgba(252,245,69,1) 81%, rgba(122,252,69,1) 100%);
-    --text-gradient:  -webkit-linear-gradient(127deg, rgba(119,9,255,1) 28%, rgba(255,41,157,1) 53%, rgba(252,245,69,1) 81%, rgba(122,252,69,1) 100%);
+    --main-bg-gradient: linear-gradient(
+        127deg,
+        rgba(119, 9, 255, 1) 28%,
+        rgba(255, 41, 157, 1) 53%,
+        rgba(252, 245, 69, 1) 81%,
+        rgba(122, 252, 69, 1) 100%
+    );
+    --text-gradient: -webkit-linear-gradient(
+        127deg,
+        rgba(119, 9, 255, 1) 28%,
+        rgba(255, 41, 157, 1) 53%,
+        rgba(252, 245, 69, 1) 81%,
+        rgba(122, 252, 69, 1) 100%
+    );
     --main-white: white;
     --main-text-color: white;
-    --title-font: 'Source Code Pro', monospace;
-    --content-font: 'Palanquin', sans-serif;
+    --title-font: "Source Code Pro", monospace;
+    --content-font: "Palanquin", sans-serif;
 }
-
 
 /* ===== General ===== */
 * {
     box-sizing: border-box;
     margin: 0;
     /* padding: 0; */
-   }
+}
 
 body {
     /* background-color: gold; */
-    background-image:var(--main-bg-gradient);
+    background-image: var(--main-bg-gradient);
     font-family: var(--content-font);
     letter-spacing: 0.4px;
 
@@ -44,17 +53,31 @@ button {
 }
 
 button:hover {
-    
 }
 
-main,
 header,
 footer {
     padding: 0 5vw;
+    background-color: rgba(255, 255, 255, 0.2);
+    width: 100%;
+}
+
+main {
+    padding: 4vh 5vw;
 }
 
 h1 {
     font-family: var(--title-font);
+    background: -webkit-linear-gradient(
+        180deg,
+        rgba(119, 9, 255, 1) 28%,
+        rgba(255, 41, 157, 1) 53%,
+        rgba(252, 245, 69, 1) 81%,
+        rgba(122, 252, 69, 1) 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 3vh;
 }
 
 /* ===== General Elements & Behaviors ===== */
@@ -62,14 +85,16 @@ h1 {
     cursor: pointer;
 }
 
-a.discreet {
-    color: orangered;
+.discreet {
+    color: indigo;
+    display: block;
+    margin-top: 2vh;
+    text-align: center;
 }
 
 /* ===== MAIN TEMPLATE LAYOUT ===== */
 .logo {
     color: var(--main-white);
-
 }
 
 .main-header {
@@ -78,17 +103,18 @@ a.discreet {
     justify-content: space-between;
     align-items: center;
     height: 15vh;
+    margin-bottom: 8vh;
 }
 
 nav.main a {
     text-transform: uppercase;
     margin-left: 3vw;
+    color: var(--main-white);
 }
 
 footer {
-    background-color:rgba(255, 255, 255, 0.2);
-    width: 100%;
     height: 8vh;
+    margin-top: 8vh;
     /* position: sticky;
     bottom: 0; */
 }
@@ -139,7 +165,20 @@ input:focus {
 } */
 
 .submit {
+    font-weight: 800;
+    letter-spacing: 0.6;
+    margin-top: 3vh;
+    font-family: var(--title-font);
+
+    background: var(--main-white);
+    color: indigo;
+    border: 3px solid indigo;
+}
+
+.submit:hover {
     background: var(--main-bg-gradient);
+    color: var(--main-white);
+    border: none;
 }
 
 label {
@@ -156,7 +195,7 @@ label {
     color: white;
 }
 
-.btn-primary:hover{
+.btn-primary:hover {
     background-color: var(--main-bg-gradient);
 }
 .error {
@@ -169,8 +208,6 @@ form.canvas-page {
 
 main.canvas-page {
     padding: 0;
-
-
 }
 canvas {
     background-color: whitesmoke;
@@ -200,8 +237,16 @@ canvas {
 }
 
 .user-data {
+    font-family: var(--title-font);
+    color: indigo;
     font-size: 1.6rem;
     /* color: hotpink; */
+}
+
+.data {
+font-family: var(--content-font);
+color: black;
+margin-left: 10px;
 }
 
 /* >>>>>>>>>>>> THANKS PAGE <<<<<<<<<<<< */
@@ -216,5 +261,5 @@ canvas {
 .one-signer {
 }
 
-.signer-info {}
-
+.signer-info {
+}

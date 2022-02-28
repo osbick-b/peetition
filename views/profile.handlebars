@@ -1,12 +1,13 @@
 <main>
     <div class="container-profile">
+        <h1>Profile</h1>
         {{#dataToRender}}
-        <p class="user-data">First name:  {{first}}</p>
-        <p class="user-data">Last name:  {{last}}</p>
-        <p class="user-data">E-Mail:  {{email}}</p>
-        <p class="user-data">City:  {{city}}</p>
-        <p class="user-data">Age:  {{age}}</p>
-        <p class="user-data">Website:  {{website}}</p>
+        <p class="user-data">First name: <span class="data"> {{first}}</span></p>
+        <p class="user-data">Last name:  <span class="data">{{last}}</span></p>
+        <p class="user-data">E-Mail:  <span class="data">{{email}}</span></span></p>
+        <p class="user-data">City: <span class="data"> {{city}}</span></p>
+        <p class="user-data">Age: <span class="data"> {{age}}</span></p>
+        <p class="user-data">Website:  <span class="data">{{website}}</span></p>
         {{/dataToRender}}
         {{!-- <canvas></canvas> --}}
     </div>
