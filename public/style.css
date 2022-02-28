@@ -1,14 +1,29 @@
-/* @collapse */
+
+
+/* Link to guidelines on styling forms: https://gerireid.com/forms.html  */
+
+/* === Custom Properties === */
+:root {
+    --main-bg-gradient:  linear-gradient(127deg, rgba(119,9,255,1) 28%, rgba(255,41,157,1) 53%, rgba(252,245,69,1) 81%, rgba(122,252,69,1) 100%);
+    --text-gradient:  -webkit-linear-gradient(127deg, rgba(119,9,255,1) 28%, rgba(255,41,157,1) 53%, rgba(252,245,69,1) 81%, rgba(122,252,69,1) 100%);
+    --main-white: whitesmoke;
+    --main-text-color: whitesmoke;
+    --title-font: 'Source Code Pro', monospace;
+    --content-font: 'Palanquin', sans-serif;
+}
+
 
 /* ===== General ===== */
 * {
     box-sizing: border-box;
     margin: 0;
-}
+    /* padding: 0; */
+   }
 
 body {
-    background-color: gold;
-    font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+    /* background-color: gold; */
+    background-image:var(--main-bg-gradient);
+    font-family: var(--content-font);
     letter-spacing: 0.4px;
 
     position: relative;
@@ -31,6 +46,10 @@ footer {
     padding: 0 5vw;
 }
 
+h1 {
+    font-family: var(--title-font);
+}
+
 /* ===== General Elements & Behaviors ===== */
 .btn {
     cursor: pointer;
@@ -41,6 +60,13 @@ a.discreet {
 }
 
 /* ===== MAIN TEMPLATE LAYOUT ===== */
+.logo {
+    background: var(--text-gradient);
+    -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+}
+
 .main-header {
     width: 100%;
     display: flex;
@@ -55,7 +81,7 @@ nav.main a {
 }
 
 footer {
-    background-color: hotpink;
+    background-color:rgba(255, 255, 255, 0.2);
     width: 100%;
     height: 8vh;
     /* position: sticky;
@@ -71,6 +97,7 @@ footer {
 form {
     padding: 5vh 0;
     display: flex;
+    position: relative;
     flex-direction: column;
     font-size: 1.4rem;
 }
@@ -84,12 +111,32 @@ input {
     padding: 4%;
 }
 
+input:focus {
+    box-shadow: 3px 3px 5px 6px rgba(0, 0, 0, 0.2);
+}
+
+input:required {
+    background-color: hotpink;
+}
+input:required:invalid {
+    border: 3px solid red;
+} 
+input:optional {background-color: pink;}
+input:invalid {
+    background-color: red;
+}
+input:valid {
+    background-color: green;
+}
+
+
+
 label {
     color: indigo;
     margin-bottom: 18%;
 }
 
-button.submit {
+.btn-primary {
     background-color: indigo;
     border: none;
     border-radius: 2rem;
@@ -98,16 +145,31 @@ button.submit {
     color: whitesmoke;
 }
 
-button.submit:hover{
+.btn-primary:hover{
     background-color: hotpink;
 }
 .error {
 }
 
 /* ===== Canvas ===== */
+form.canvas-page {
+    padding: 0;
+}
+
+main.canvas-page {
+    padding: 0;
+
+
+}
 canvas {
     background-color: whitesmoke;
     border-radius: 5vw;
+    /* width: 80vw;
+    height: 30vh; */
+}
+
+.canvas-cont {
+    /* width: 90vw; */
 }
 
 .disable-select {

@@ -9,11 +9,6 @@ const { layoutMain, editProfile, logErr } = require("../niftypack");
 
 module.exports = router;
 
-// ======= Middleware ======= //
-
-router.use((req, res, next) => {
-    next();
-});
 
 /////////// REGISTER ROUTES ////////////
 

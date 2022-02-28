@@ -1,13 +1,26 @@
-<main>
+ <main class="canvas-page">
     <h2>Binding Contract</h2>
-    <p> Hereby I, {{first}} {{last}}, swear to devote my soul and body to the cause of this petition. No money I shall earn or victory I shall conquer will be deoted to another cause other than the contents of this petition. </p>
+    <p>
+        Hereby I,
+        {{first}}
+        {{last}}, swear to devote my soul and body to the cause of this
+        petition. No money I shall earn or victory I shall conquer will be
+        deoted to another cause other than the contents of this petition.
+    </p>
     <p> I so solemnly swear. </p>
-    <form class="disable-select" action="" method="post">
-        <input type="hidden" name="signature" id="signature"/>
+    <form class="disable-select canvas-page" action="" method="post">
+        <input type="hidden" name="signature" id="signature" />
         <label for="signature">Signature</label>
-
-        <canvas height="200px" width="500px"></canvas>
-        <script src="canvas.js"></script>
-        <input class="btn" type="submit" value="Sign the petition" id="submit-sign">
+        <div class="canvas-cont">
+            <canvas height="300px" width="500"></canvas>
+        </div>
+        <input
+            class="btn"
+            type="submit"
+            value="Sign the petition"
+            id="submit-sign"
+        />
     </form>
+    <a href="/profile/deletesignature" class="discreet destructive">Delete signature</a>
 </main>
+<script src="canvas.js"></script>

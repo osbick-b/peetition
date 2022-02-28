@@ -10,12 +10,6 @@ const { layoutMain, editProfile, logErr } = require("../niftypack");
 
 module.exports = router;
 
-// ======= Middleware ======= //
-
-router.use((req, res, next) => {
-    console.log(`${req.method}: ${req.url} in the profile module`);
-    next();
-});
 
 /////////// Signers ROUTES ////////////
 

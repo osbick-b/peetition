@@ -14,8 +14,12 @@ module.exports = router;
 // ------------------ Profile --------------------- //
 
 router.get("/", mw.requireLoggedIn, (req, res) => {
-    return db
-        .getProfile(req.session.user_id)
+    return db.getCookieById(req.session.user_id).then((results) => {
+        req.session = results.rows[0];
+        console.log("req.session AFTER getCookieById", req.session);
+return db.getProfile(req.session.user_id);
+    }) 
+    
         .then((results) => {
             res.render("profile", layoutMain("My Profile", results.rows[0]));
         })
@@ -69,7 +73,7 @@ router.post("/edit", mw.requireLoggedIn, (req, res) => {
         req.body.password !== "" &&
         req.body.password !== req.body.passconfirm
     ) {
-        return res.redirect("/edit"); // +++ ADD SOMEHOW error handlebar
+        return res.redirect("/profile/edit"); // +++ ADD SOMEHOW error handlebar
     }
     /// check password situation
     editProfile(req) // +++ validate input --- go to nif
@@ -87,4 +91,26 @@ router.post("/edit", mw.requireLoggedIn, (req, res) => {
                 layoutMain("ERROR IN editPROFILE")
             ); // +++ error handlebar
         });
+});
+
+router.get(
+    "/deletesignature",
+    mw.requireLoggedIn,
+    mw.requireHasSigned,
+    (req, res) => {
+       res.render("profile_deletesign", layoutMain("Are you sure?"));
+    }
+);
+
+router.get("/deletesignature/delete", mw.requireLoggedIn, mw.requireHasSigned, (req,res) => {
+     return db.deleteSignature(req.session.user_id)
+         .then((results) => {
+            //  console.log("signature should have been deleted");
+            //  console.log("res.rows0", results.rows[0]);
+            req.session.has_signed = false;
+             return res.redirect("/profile");
+         })
+         .catch((err) => {
+             logErr(err, "deleting signature");
+         });
 });

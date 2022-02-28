@@ -30,6 +30,20 @@ module.exports.getCookieInfo = (email) => {
     );
 };
 
+
+// ---------- Cookie info by Id ------- //
+
+module.exports.getCookieById = (user_id) => {
+    console.log("in getCookieById", user_id);
+    return db.query(
+        `SELECT users.id AS user_id, users.first, users.last, signatures.user_id AS has_signed
+        FROM users LEFT JOIN signatures 
+        ON users.id = signatures.user_id 
+        WHERE users.id = $1`,
+        [user_id]
+    );
+};
+
 // ------------ Register ------------- //
 
 module.exports.registerUser = (first, last, email, password) => {
@@ -48,7 +62,8 @@ module.exports.setProfile = (city, age, website, user_id) => {
 };
 
 // ------------- Edit Profile ------------- // +++ NOT DONE JUST COPIED
-module.exports.editProfile = // ++++ UPSERT THINGIE goes here
+// module.exports.editProfile = // ++++ UPSERT THINGIE goes here
+
     // -------------- Get Profile -------------- //
     module.exports.getProfile = (user_id) => {
         return db.query(
@@ -65,10 +80,20 @@ module.exports.editProfile = // ++++ UPSERT THINGIE goes here
 
 module.exports.signPetition = (signature, user_id) => {
     return db.query(
-        "INSERT INTO signatures (signature, user_id) VALUES ($1, $2) RETURNING signature, user_id",
+        "INSERT INTO signatures (signature, user_id) VALUES ($1, $2) RETURNING user_id AS has_signed",
         [signature, user_id]
     );
 };
+
+// ------------ Delete Signature ------------- //
+module.exports.deleteSignature = (user_id) => {
+    console.log("in db.deleteSign", user_id);
+    return db.query(
+        "DELETE FROM signatures WHERE user_id = $1 RETURNING user_id",
+        [user_id]
+    );
+};
+
 
 // ------------ Get List of Signers ------------- //
 module.exports.getListSigners = () => {

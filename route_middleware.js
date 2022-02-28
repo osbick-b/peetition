@@ -22,6 +22,5 @@ module.exports.requireHasSigned = (req, res, next) => {
 };
 
 module.exports.requireNotSigned = (req, res, next) => {
-    console.log(req.session.has_signed);
     !req.session.has_signed ? next() : res.redirect("/thanks");
 };

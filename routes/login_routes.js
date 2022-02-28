@@ -12,9 +12,6 @@ module.exports = router;
 
 /////////// LOGIN ROUTES ////////////
 
-
-// ------------------ GET LOGIN --------------------- //
-
 //---- Login ----// ---------- +++ try to refactor it with
 
 router.get("/", mw.requireLoggedOut, (req, res) => {

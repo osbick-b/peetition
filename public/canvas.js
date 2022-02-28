@@ -11,19 +11,22 @@ let hasSigned;
 canvas.addEventListener("mousedown", startSignature);
 document.addEventListener("mouseup", finishAndSave);
 
-// window.addEventListener("resize", resize);
+// window.addEventListener("resize", resize, false);
 
 //=====================================//
 
 // function resize(){
-//     ctx.canvas.width = window.innerWidth;
-//     ctx.canvas.height = window.innerHeight;
+//     canvas.width = window.innerWidth*0.8;
+//     canvas.height = window.innerHeight*0.4;
 // }
+// resize();
 
+console.log("offset XY", canvas.offsetLeft, canvas.offsetTop);
 function reposition(e) {
-    coord.x = e.clientX - canvas.offsetLeft;
-    coord.y = e.clientY - canvas.offsetTop;
-    console.log(coord.x, coord.y);
+    coord.x = e.clientX - 1.5*canvas.offsetLeft;
+    coord.y = e.clientY - 1.5*canvas.offsetTop;
+    console.log("coord", coord.x, coord.y);
+    console.log("client", e.clientX, e.clientY);
 }
 
 function startSignature(e) {
@@ -52,10 +55,7 @@ function draw(e) {
 
 function finishAndSave() {
     canvas.removeEventListener("mousemove", draw);
-    // add save part --- maybe better do it on submit, just get value and shove it to db
     let hasSigned = true;
     let canvasData = canvas.toDataURL();
     document.getElementById("signature").value = canvasData;
-    console.log("value", document.getElementById("signature").value);
 }
-

@@ -6,57 +6,48 @@
     <h1>Edit Profile</h1>
     <form class="disable-select" action="" method="post">
     {{#dataToRender}}
-        <label for="first">
             <input type="text" name="first" id="first" value="{{first}}"/>
-            first name
-        </label>
+        <label for="first">first name</label>
+            
 
-        <label for="last">
             <input type="text" name="last" id="last" value="{{last}}"/>
-            last name
-        </label>
+        <label for="last">last name</label>
+            
 
-        <label for="email">
             <input type="email" name="email" id="email" value="{{email}}"/>
-            email
-        </label>
+        <label for="email">email</label>
+            
 
-        <label for="password">
-            <input type="password" name="password" id="password" value=""/>
-            password
-        </label>
+            <input type="password" name="password" id="password" value=none/>
+        <label for="password">password</label>
+            
 
-        <label for="passconfirm">
             <input
                 type="password"
                 name="passconfirm"
                 id="passconfirm"
             />
-            confirm password
-        </label>
-        {{! <span class="req">(required)</span> }}
-        {{! <span class="error-message">
-        Please give us a little more information about your inquiry.
-      </span> }}
-        <label for="city">
+        <label for="passconfirm">confirm password</label>
+            
+        
             <input type="text" name="city" id="city" value="{{city}}"/>
-            city
-        </label>
+        <label for="city">city</label>
+            
 
-        <label for="age">
             <input type="text" name="age" id="age" value="{{age}}"/>
-            age
-        </label>
+        <label for="age">age</label>
+            
 
-        <label for="website">
+            <input type="url" name="website" aria-describedby="website-format" id="website" value="{{website}}" title="must start with http:// or https:/"/>
+        <label for="website">website</label>
+        {{!-- <span id="website-format" class="tooltip">Website must start with http:// or https://</span> --}}
             {{!-- +++ UX HINT: url has to start with http:// or https:// --}}
-            <input type="text" name="website" id="website" value="{{website}}"/>
-            website
-        </label>
+            
 
-        <button class="submit" type="submit">Submit</button>
+        <button class="btn-primary" type="submit">Submit</button>
     {{/dataToRender}}
     </form>
 
-    <a href="/sign" class="discreet"> → Skip</a>
+    <a href="/profile/deletesignature" class="discreet destructive">Delete signature</a>
+
 </main>
