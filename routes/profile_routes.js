@@ -18,7 +18,6 @@ router.get("/", mw.requireLoggedIn, (req, res) => {
         .getCookieById(req.session.user_id)
         .then((results) => {
             req.session = results.rows[0];
-            console.log("req.session AFTER getCookieById", req.session);
             return db.getProfile(req.session.user_id);
         })
 
@@ -37,7 +36,7 @@ router.get("/set", mw.requireLoggedIn, (req, res) => {
         ? res.render("profile_set", layoutMain("Set Profile"))
         : res.redirect("/profile/edit");
     req.session.newUser = null;
-    console.log("newUser AFTER", req.session.newUser);
+    // console.log("newUser AFTER", req.session.newUser);
 });
 
 router.post("/set", mw.requireLoggedIn, (req, res) => {
@@ -71,11 +70,13 @@ router.get("/edit", mw.requireLoggedIn, (req, res) => {
 });
 
 router.post("/edit", mw.requireLoggedIn, (req, res) => {
-    req.body.password !== "" &&
-        req.body.password !== req.body.passconfirm
-        ? res.redirect("/profile/edit") // +++ ADD error handlebar
-        : editProfile(req) // +++ validate input --- go to nif
-        return res.redirect("/profile");
+    const urlNotValid = req.body.website && !req.body.website.startsWith("http://" || "https://");
+    const passNotValid = req.body.password !== "" && req.body.password !== req.body.passconfirm;
+    console.log("urlNotValid, passNotValid", urlNotValid, passNotValid);
+       urlNotValid || passNotValid
+            ? res.render("profile_edit", layoutMain("ERROR IN UPDATE PROFILE")) // +++ ADD error handlebar
+            : editProfile(req);
+        return res.redirect("/profile"); // !!! PROBLEM is here --- headers have been sent already i think.
   });
 
 router.get(

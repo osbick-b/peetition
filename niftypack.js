@@ -2,6 +2,7 @@ const db = require("./database/db");
 const { compare, hash } = require("./bc");
 const req = require("express/lib/request");
 const res = require("express/lib/response");
+const { render } = require("express/lib/response");
 
 // ======= Functions ======= //
 
@@ -44,12 +45,6 @@ module.exports.editProfile = (req) => {
     const user_id = req.session.user_id;
     let responseObj = {};
 
-    if (
-        userInput.website &&
-        !userInput.website.startsWith("http://" || "https://")
-    ) {
-        throw new Error("website input not valid");
-    }
 
     return db
         .updateRegister(userInput, user_id)
