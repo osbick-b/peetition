@@ -1,0 +1,53 @@
+
+{{! link for documentation on accessibility for forms }}
+{{! http://web-accessibility.carnegiemuseums.org/code/forms/ }}
+
+<main>
+    <h1>Edit Profile</h1>
+    <form class="disable-select" action="" method="post">
+    {{#dataToRender}}
+            <input type="text" name="first" id="first" value="{{first}}"/>
+        <label for="first">first name</label>
+            
+
+            <input type="text" name="last" id="last" value="{{last}}"/>
+        <label for="last">last name</label>
+            
+
+            <input type="email" name="email" id="email" value="{{email}}"/>
+        <label for="email">email</label>
+            
+
+            <input type="password" name="password" id="password" value=none/>
+        <label for="password">password</label>
+            
+
+            <input
+                type="password"
+                name="passconfirm"
+                id="passconfirm"
+            />
+        <label for="passconfirm">confirm password</label>
+            
+        
+            <input type="text" name="city" id="city" value="{{city}}"/>
+        <label for="city">city</label>
+            
+
+            <input type="text" name="age" id="age" value="{{age}}"/>
+        <label for="age">age</label>
+            
+
+            <input type="url" name="website" aria-describedby="website-format" id="website" value="{{website}}" title="must start with http:// or https:/"/>
+        <label for="website">website</label>
+        {{!-- <span id="website-format" class="tooltip">Website must start with http:// or https://</span> --}}
+            {{!-- +++ UX HINT: url has to start with http:// or https:// --}}
+            
+
+        <button class="btn-primary" type="submit">Submit</button>
+    {{/dataToRender}}
+    </form>
+
+    <a href="/profile/deletesignature" class="discreet destructive">Delete signature</a>
+
+</main>

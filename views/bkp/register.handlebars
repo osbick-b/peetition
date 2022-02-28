@@ -1,0 +1,45 @@
+{{!-- link for documentation on accessibility for forms --}}
+{{!-- http://web-accessibility.carnegiemuseums.org/code/forms/ --}}
+
+<main>
+    <form class="disable-select" action="" method="post">
+
+        <label for="first">
+            <input type="text" required="" name="first" id="first" />
+            first name
+        </label>
+
+        <label for="last">
+            <input type="text" required="" name="last" id="last" />
+            last name
+        </label>
+
+        <label for="email">
+            <input type="email" required="" name="email" id="email" />
+            email
+        </label>
+
+        <label for="password">
+            <input type="password" required="" name="password" id="password" />
+            password
+        </label>
+
+        <label for="passconfirm">
+            <input
+                type="password"
+                required=""
+                name="passconfirm"
+                id="passconfirm"
+            />
+            confirm password
+            {{! <span class="req">(required)</span> }}
+            {{! <span class="error-message">
+        Please give us a little more information about your inquiry.
+      </span> }}
+        </label>
+
+        <button class="submit" type="submit">Submit</button>
+    </form>
+
+    <a href="/login" class="discreet">Already registered? Login here</a>
+</main>

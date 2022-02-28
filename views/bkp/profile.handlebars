@@ -1,0 +1,17 @@
+<main>
+    <div class="container-profile">
+        {{#dataToRender}}
+        <p class="user-data">First name:  {{first}}</p>
+        <p class="user-data">Last name:  {{last}}</p>
+        <p class="user-data">E-Mail:  {{email}}</p>
+        <p class="user-data">City:  {{city}}</p>
+        <p class="user-data">Age:  {{age}}</p>
+        <p class="user-data">Website:  {{website}}</p>
+        {{/dataToRender}}
+        {{!-- <canvas></canvas> --}}
+    </div>
+    <a href="/profile/edit" class="discreet"> Edit Profile</a>
+    <a href="/profile/deletesignature" class="discreet destructive">Delete signature</a>
+
+
+</main>
