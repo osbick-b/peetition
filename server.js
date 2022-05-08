@@ -25,7 +25,7 @@ app.engine("handlebars", engine());
 app.set("view engine", "handlebars");
 
 app.use(express.static("./public"));
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: false })); //-- what does it do
 
 app.use(
     cookieSession({
